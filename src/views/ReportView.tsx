@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { CheckCircle2, TrendingUp, Award, LayoutDashboard } from 'lucide-react';
+import { Award, LayoutDashboard } from 'lucide-react';
 
 export default function ReportView({ data, onDashboard }: any) {
   // Mock data if 'data' is null for testing
