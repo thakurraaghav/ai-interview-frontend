@@ -4,3 +4,10 @@ body {
   @apply bg-[#0f0f0f] text-white antialiased;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
+@theme {
+  /* This defines the shimmer animation for your buttons */
+  @keyframes shimmer {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(100%); }
+  }
+}

@@ -1,11 +1,11 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useSpeechToText } from '../hooks/useSpeechToText';
-import { Loader2, PhoneOff, Mic, ChevronLeft, AlertCircle } from 'lucide-react';
+import { Loader2, PhoneOff, Mic, ChevronLeft, AlertCircle, Zap, Activity, MessageSquare } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Props { onEnd: (data: any) => void; onBack: () => void; }
 
-// --- REUSABLE CUSTOM MODAL ---
+// --- REUSABLE CUSTOM MODAL (Polished for Production) ---
 function Modal({ isOpen, title, message, confirmLabel, onConfirm, onCancel }: any) {
   return (
     <AnimatePresence>
@@ -14,33 +14,35 @@ function Modal({ isOpen, title, message, confirmLabel, onConfirm, onCancel }: an
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={onCancel}
-            className="absolute inset-0 bg-black/80 backdrop-blur-md" 
+            className="absolute inset-0 bg-black/60 backdrop-blur-xl" 
           />
           <motion.div 
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="relative w-full max-w-sm bg-[#0A0A0A] border border-white/10 p-8 rounded-[2.5rem] shadow-2xl shadow-indigo-500/10"
+            className="relative w-full max-w-sm bg-[#111] border border-white/10 p-10 rounded-[3rem] shadow-2xl shadow-indigo-500/10"
           >
-            <div className="flex items-center gap-3 mb-4">
-              <AlertCircle className="text-indigo-500" size={24} />
-              <h3 className="text-xl font-bold tracking-tight italic text-white">{title}</h3>
-            </div>
-            <p className="text-gray-500 text-sm leading-relaxed mb-8">{message}</p>
-            
-            <div className="flex gap-3">
-              <button 
-                onClick={onCancel}
-                className="flex-1 py-3 rounded-full bg-white/5 hover:bg-white/10 text-[10px] font-black uppercase tracking-widest transition-all text-white"
-              >
-                Stay
-              </button>
-              <button 
-                onClick={onConfirm}
-                className="flex-1 py-3 rounded-full bg-white text-black text-[10px] font-black uppercase tracking-widest transition-all hover:bg-gray-200"
-              >
-                {confirmLabel}
-              </button>
+            <div className="flex flex-col items-center text-center">
+              <div className="p-4 rounded-2xl bg-indigo-500/10 text-indigo-400 mb-6">
+                <AlertCircle size={32} />
+              </div>
+              <h3 className="text-2xl font-bold tracking-tight text-white mb-3">{title}</h3>
+              <p className="text-gray-500 text-sm leading-relaxed mb-10">{message}</p>
+              
+              <div className="flex flex-col w-full gap-3">
+                <button 
+                  onClick={onConfirm}
+                  className="w-full py-4 rounded-2xl bg-white text-black text-[10px] font-black uppercase tracking-widest transition-all hover:bg-gray-200 active:scale-95"
+                >
+                  {confirmLabel}
+                </button>
+                <button 
+                  onClick={onCancel}
+                  className="w-full py-4 rounded-2xl bg-white/5 hover:bg-white/10 text-[10px] font-black uppercase tracking-widest transition-all text-white active:scale-95"
+                >
+                  Stay in Session
+                </button>
+              </div>
             </div>
           </motion.div>
         </div>
@@ -52,7 +54,7 @@ function Modal({ isOpen, title, message, confirmLabel, onConfirm, onCancel }: an
 export default function CallView({ onEnd, onBack }: Props) {
   const [status, setStatus] = useState<"idle" | "thinking" | "speaking">("idle");
   const [history, setHistory] = useState<{ role: string; content: string }[]>([]);
-  const [showShortModal, setShowShortModal] = useState(false); // Modal state
+  const [showShortModal, setShowShortModal] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const isMounted = useRef(true);
 
@@ -92,6 +94,7 @@ export default function CallView({ onEnd, onBack }: Props) {
       audio.play();
       audio.onended = () => {
         if (isMounted.current) setStatus("idle");
+        startListening();
       };
     } catch (error) {
       if (isMounted.current) setStatus("idle");
@@ -102,18 +105,14 @@ export default function CallView({ onEnd, onBack }: Props) {
 
   const triggerEndSession = async () => {
     stopListening();
-    
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current = null;
     }
-
-    // 1. Minimum Conversation Check - TRIGGER MODAL INSTEAD OF ALERT
     if (history.length < 3) {
       setShowShortModal(true);
       return;
     }
-
     setStatus("thinking");
     try {
       const response = await fetch('http://localhost:3000/api/interview/report', {
@@ -124,76 +123,170 @@ export default function CallView({ onEnd, onBack }: Props) {
         },
         body: JSON.stringify({ history }),
       });
-      
       if (!isMounted.current) return;
-
       const data = await response.json();
       onEnd(data);
     } catch (error) {
-      console.error("Report Error:", error);
       onBack();
     }
   };
 
-  const handleExit = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-    }
-    onBack();
-  };
-
   return (
-    <div className="min-h-screen bg-[#050505] text-white flex flex-col items-center justify-between p-12">
-      <div className="w-full flex justify-between items-center">
-        <button onClick={handleExit} className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest">
-          <ChevronLeft size={16} /> Exit
+    <div className="min-h-screen bg-[#050505] text-white flex flex-col font-sans overflow-hidden">
+      
+      {/* 1. TOP NAV (HUD Style) */}
+      <nav className="w-full flex justify-between items-center p-6 md:p-10 relative z-50 backdrop-blur-md">
+        <button 
+          onClick={onBack} 
+          className="group flex items-center gap-3 text-gray-500 hover:text-red-400 transition-all text-[10px] font-black uppercase tracking-[0.3em]"
+        >
+          <div className="p-2 rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors">
+            <ChevronLeft size={16} />
+          </div>
+          Exit Session
         </button>
-        <div className="flex items-center gap-3">
-          <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-          <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-gray-400">Live Session</span>
-        </div>
-      </div>
 
-      <div className="relative flex items-center justify-center">
-        <div className={`absolute w-96 h-96 rounded-full blur-[100px] transition-all duration-1000 ${status === 'speaking' ? 'bg-indigo-600/20' : 'bg-white/5'}`} />
-        <div className="relative w-48 h-48 rounded-full border border-white/10 backdrop-blur-3xl flex items-center justify-center">
-          {status === 'thinking' ? <Loader2 className="animate-spin text-indigo-400" /> : <div className={`rounded-full bg-white transition-all ${isListening ? 'w-6 h-6' : 'w-2 h-2'}`} />}
+        <div className="flex items-center gap-4 px-5 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-[10px] font-black tracking-widest uppercase text-gray-300">Live Connection</span>
+          </div>
+          <div className="w-px h-3 bg-white/10" />
+          <span className="text-[10px] font-black tracking-widest uppercase text-indigo-400">
+            {history.length} Nodes
+          </span>
         </div>
-      </div>
+      </nav>
 
-      <div className="w-full max-w-lg text-center space-y-10">
-        <div className="min-h-20">
-          <p className="text-gray-400 text-lg font-light italic">{transcript || "Ready to start?"}</p>
+      {/* 2. CENTRAL INTERACTION AREA */}
+      <main className="flex-1 flex flex-col items-center justify-center relative px-6">
+        
+        {/* Cinematic Backdrop Glow */}
+        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-[120px] transition-all duration-1000 pointer-events-none opacity-20 ${
+          status === 'speaking' ? 'bg-indigo-500' : status === 'thinking' ? 'bg-amber-500' : 'bg-cyan-500'
+        }`} />
+
+        <div className="relative z-10 flex flex-col items-center">
+          {/* THE ORB */}
+          <motion.div 
+            animate={status === 'speaking' ? { scale: [1, 1.05, 1] } : { scale: 1 }}
+            transition={{ repeat: Infinity, duration: 2 }}
+            className={`relative w-48 h-48 md:w-64 md:h-64 rounded-full border border-white/10 backdrop-blur-3xl flex items-center justify-center shadow-2xl transition-all duration-700 ${
+              isListening ? 'ring-8 ring-indigo-500/20' : ''
+            }`}
+          >
+            <AnimatePresence mode="wait">
+              {status === 'thinking' ? (
+                <motion.div 
+                  key="thinking"
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  className="flex flex-col items-center gap-4"
+                >
+                  <Loader2 className="animate-spin text-indigo-400" size={40} />
+                  <span className="text-[9px] font-black uppercase tracking-[0.4em] text-indigo-400/60">Analyzing</span>
+                </motion.div>
+              ) : (
+                <motion.div 
+                  key="vocal"
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  className="flex flex-col items-center gap-4"
+                >
+                   {/* Waveform Animation Placeholder */}
+                   <div className="flex gap-1 h-8 items-center">
+                      {[1,2,3,4,5].map((i) => (
+                        <motion.div
+                          key={i}
+                          animate={status === 'speaking' || isListening ? { height: [8, 32, 8] } : { height: 4 }}
+                          transition={{ repeat: Infinity, duration: 0.5, delay: i * 0.1 }}
+                          className="w-1 bg-indigo-500 rounded-full"
+                        />
+                      ))}
+                   </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+
+          {/* TRANSCRIPT AREA */}
+          <div className="mt-16 max-w-2xl text-center">
+             <AnimatePresence mode="wait">
+                <motion.p 
+                  key={transcript || 'empty'}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-white text-xl md:text-3xl font-light italic leading-tight tracking-tight px-4"
+                >
+                  {transcript || (status === 'speaking' ? "Hannah is speaking..." : "Tap on mic below to start")}
+                </motion.p>
+             </AnimatePresence>
+          </div>
+        </div>
+      </main>
+
+      {/* 3. CONTROL BAR */}
+      <footer className="w-full p-10 flex flex-col items-center gap-8 relative z-50">
+        
+        {/* Status Indicators */}
+        <div className="flex gap-12 text-gray-600">
+           <StatusIcon icon={<Zap size={14}/>} label="Zero Latency" />
+           <StatusIcon icon={<Activity size={14}/>} label="Neural Audio" />
+           <StatusIcon icon={<MessageSquare size={14}/>} label="Context Aware" />
         </div>
 
-        <div className="flex flex-col items-center gap-4">
-          {!isListening && status === 'idle' ? (
-            <button onClick={startListening} className="group flex flex-col items-center gap-4">
-              <div className="p-8 rounded-full bg-white text-black hover:scale-105 transition-all">
-                <Mic size={24} />
-              </div>
-              <span className="text-[10px] uppercase tracking-[0.4em] font-black text-white/40">Start Interview</span>
-            </button>
-          ) : (
-            <button onClick={triggerEndSession} className="group flex flex-col items-center gap-4">
-              <div className="p-8 rounded-full bg-red-500/10 border border-red-500/20 hover:bg-red-500 transition-all">
-                <PhoneOff size={24} className="text-red-500 group-hover:text-white" />
-              </div>
-              <span className="text-[10px] uppercase tracking-[0.4em] font-black text-red-500/60">End Session</span>
-            </button>
+        <div className="relative group">
+          <AnimatePresence mode="wait">
+            {!isListening && status === 'idle' ? (
+              <motion.button 
+                initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }}
+                onClick={startListening} 
+                className="relative z-10 p-8 rounded-full bg-white text-black hover:scale-105 active:scale-95 transition-all shadow-xl shadow-white/10"
+              >
+                <Mic size={28} />
+              </motion.button>
+            ) : (
+              <motion.button 
+                initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }}
+                onClick={triggerEndSession} 
+                className="relative z-10 p-8 rounded-full bg-red-500 text-white hover:scale-105 active:scale-95 transition-all shadow-xl shadow-red-500/20"
+              >
+                <PhoneOff size={28} />
+              </motion.button>
+            )}
+          </AnimatePresence>
+          
+          {/* Animated Background Pulse for Mic */}
+          {isListening && (
+            <motion.div 
+              initial={{ scale: 1, opacity: 0.5 }}
+              animate={{ scale: 1.5, opacity: 0 }}
+              transition={{ repeat: Infinity, duration: 1.5 }}
+              className="absolute inset-0 bg-indigo-500 rounded-full z-0"
+            />
           )}
         </div>
-      </div>
 
-      {/* --- SHORT SESSION MODAL --- */}
+        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-gray-500">
+          {isListening ? 'Streaming Audio' : 'Awaiting Input'}
+        </span>
+      </footer>
+
       <Modal 
         isOpen={showShortModal}
-        title="Session too short"
-        message="Hannah needs at least one full answer to generate your performance report. Do you want to stay or exit anyway?"
+        title="Insufficient Data"
+        message="Hannah requires more dialogue to build a precise performance report. Ending now will discard the session analysis."
         confirmLabel="Exit Anyway"
         onConfirm={onBack}
-        onCancel={() => setShowShortModal(false)}
+        onCancel={() => { setShowShortModal(false); startListening(); }}
       />
+    </div>
+  );
+}
+
+function StatusIcon({ icon, label }: { icon: any, label: string }) {
+  return (
+    <div className="flex items-center gap-2 opacity-40 hover:opacity-100 transition-opacity cursor-default">
+      {icon}
+      <span className="text-[9px] font-black uppercase tracking-widest">{label}</span>
     </div>
   );
 }

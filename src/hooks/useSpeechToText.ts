@@ -1,28 +1,28 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-interface Window {
-  SpeechRecognition?: any;
-  webkitSpeechRecognition?: any;
-}
-
 export const useSpeechToText = (onFinal: (text: string) => void) => {
   const [transcript, setTranscript] = useState("");
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Use a Ref for the callback to prevent the useEffect from re-running 
+  // every time the parent component re-renders.
+  const onFinalRef = useRef(onFinal);
+  useEffect(() => {
+    onFinalRef.current = onFinal;
+  }, [onFinal]);
 
   useEffect(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-
-    if (!SpeechRecognition) return;
+    if (!SpeechRecognition || recognitionRef.current) return;
 
     const recognition = new SpeechRecognition();
-    recognition.continuous = true; // 💡 Keep mic open
+    recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = 'en-US';
 
     recognition.onresult = (event: any) => {
-      // Clear the silence timer because the user is still talking
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
       let currentTranscript = "";
@@ -32,35 +32,50 @@ export const useSpeechToText = (onFinal: (text: string) => void) => {
       
       setTranscript(currentTranscript);
 
-      // 💡 THE AUTO-DETECTION MAGIC
-      // If the user stops talking for 1.5 seconds, auto-send to AI
       timeoutRef.current = setTimeout(() => {
         if (currentTranscript.trim().length > 2) {
-          onFinal(currentTranscript);
-          setTranscript(""); // Clear UI for next turn
-          // Note: We don't stop the mic, it's "Always On"
+          // Use the Ref here so we don't need onFinal in the dependency array
+          onFinalRef.current(currentTranscript);
+          setTranscript(""); 
         }
       }, 1500); 
     };
 
     recognition.onend = () => {
-      // If it stops unexpectedly (browser timeout), restart it if we are in "Call Mode"
-      if (isListening) recognition.start();
+      // 💡 Only restart if the USER didn't manually stop it
+      // This prevents the "mic turning off automatically" bug
+      if (recognitionRef.current && isListening) {
+        try {
+          recognition.start();
+        } catch (e) {
+          console.error("Speech recognition restart failed:", e);
+        }
+      }
     };
 
     recognitionRef.current = recognition;
-  }, [onFinal, isListening]);
 
-  const startListening = () => {
+    // Cleanup on unmount
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      recognition.stop();
+    };
+  }, [isListening]); // 💡 Only depend on isListening
+
+  const startListening = useCallback(() => {
     setIsListening(true);
-    recognitionRef.current?.start();
-  };
+    try {
+      recognitionRef.current?.start();
+    } catch (e) {
+      console.warn("Recognition already started");
+    }
+  }, []);
 
-  const stopListening = () => {
+  const stopListening = useCallback(() => {
     setIsListening(false);
     recognitionRef.current?.stop();
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-  };
+  }, []);
 
   return { transcript, setTranscript, isListening, startListening, stopListening };
 };

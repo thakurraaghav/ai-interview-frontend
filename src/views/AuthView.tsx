@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Mail, Lock, User, ArrowRight, Globe } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Mail, Lock, User, ArrowRight, Globe, Zap, ShieldCheck } from 'lucide-react';
 
 interface Props { 
   onAuthSuccess: (user: any) => void; 
@@ -33,9 +33,7 @@ export default function AuthView({ onAuthSuccess, onBack }: Props) {
       const data = await response.json();
 
       if (response.ok) {
-        // Store token for persistent sessions
         localStorage.setItem('token', data.token);
-        // Update global app state
         onAuthSuccess(data.user);
       } else {
         alert(data.message || "Authentication failed. Please try again.");
@@ -49,37 +47,56 @@ export default function AuthView({ onAuthSuccess, onBack }: Props) {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] flex items-center justify-center p-6 relative overflow-hidden">
-      {/* Visual Background Orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/10 blur-[120px] rounded-full" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/10 blur-[120px] rounded-full" />
+    <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center p-4 sm:p-6 relative overflow-hidden font-sans">
+      
+      {/* 1. RESPONSIVE BACKGROUND LIGHTING */}
+      <div className="absolute top-[-5%] left-[-5%] w-[60%] sm:w-[40%] h-[40%] bg-indigo-600/10 blur-[100px] sm:blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-[-5%] right-[-5%] w-[50%] sm:w-[30%] h-[30%] bg-indigo-900/10 blur-[80px] sm:blur-[100px] rounded-full pointer-events-none" />
 
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md relative z-10"
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4 }}
+        className="w-full max-w-[440px] relative z-10"
       >
-        <div className="bg-white/3 border border-white/10 backdrop-blur-3xl rounded-[3rem] p-10 shadow-2xl">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold tracking-tighter mb-2 italic">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
+        <div className="bg-[#0A0A0A] border border-white/5 backdrop-blur-2xl rounded-[2rem] sm:rounded-[2.5rem] p-8 sm:p-12 shadow-2xl">
+          
+          {/* HEADER - Adjusted for mobile */}
+          <div className="text-center mb-8 sm:mb-10">
+            <motion.div 
+              className="inline-flex p-3 rounded-2xl bg-indigo-600/10 text-indigo-500 mb-5 sm:mb-6 border border-indigo-500/20 shadow-lg shadow-indigo-500/5"
+            >
+              <Zap size={24} fill="currentColor" className="sm:w-7 sm:h-7" />
+            </motion.div>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter mb-2 italic">
+              {isLogin ? 'Access Portal' : 'Create Identity'}
             </h2>
-            <p className="text-gray-500 text-sm font-light">
-              {isLogin ? 'Enter your credentials to access your dashboard.' : 'Join the elite circle of technical masters.'}
+            <p className="text-gray-500 text-[10px] sm:text-xs font-black uppercase tracking-[0.2em]">
+              {isLogin ? 'Initialize Session' : 'Register Credentials'}
             </p>
           </div>
 
+          {/* FORM */}
           <form className="space-y-4" onSubmit={handleSubmit}>
-            {!isLogin && (
-              <AuthInput 
-                icon={<User size={18} />} 
-                type="text" 
-                placeholder="Full Name" 
-                value={name}
-                onChange={(e: any) => setName(e.target.value)}
-                required
-              />
-            )}
+            <AnimatePresence mode="wait">
+              {!isLogin && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                >
+                  <AuthInput 
+                    icon={<User size={18} />} 
+                    type="text" 
+                    placeholder="Full Name" 
+                    value={name}
+                    onChange={(e: any) => setName(e.target.value)}
+                    required
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <AuthInput 
               icon={<Mail size={18} />} 
               type="email" 
@@ -88,6 +105,7 @@ export default function AuthView({ onAuthSuccess, onBack }: Props) {
               onChange={(e: any) => setEmail(e.target.value)}
               required
             />
+            
             <AuthInput 
               icon={<Lock size={18} />} 
               type="password" 
@@ -99,52 +117,63 @@ export default function AuthView({ onAuthSuccess, onBack }: Props) {
             
             <button 
               disabled={loading}
-              className="w-full py-4 bg-white text-black rounded-2xl font-bold mt-6 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              className="group w-full py-4 sm:py-5 bg-white text-black rounded-2xl font-black uppercase text-[10px] sm:text-[11px] tracking-[0.3em] mt-6 hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-center gap-3 disabled:opacity-50 active:scale-95 shadow-lg"
             >
-              {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Create Account')} 
-              {!loading && <ArrowRight size={18} />}
+              {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Join Now')} 
+              {!loading && <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />}
             </button>
           </form>
 
-          <div className="mt-8 pt-8 border-t border-white/5 space-y-4">
-            <button className="w-full py-3 rounded-2xl bg-white/5 border border-white/10 text-sm font-medium hover:bg-white/10 transition-all flex items-center justify-center gap-3">
-              <Globe size={18}/>  Continue with GitHub
+          {/* DIVIDER */}
+          <div className="relative my-8 sm:my-10">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-white/5"></span>
+            </div>
+            <div className="relative flex justify-center text-[10px] uppercase font-black tracking-widest">
+              <span className="bg-[#0A0A0A] px-4 text-gray-600">Secure Protocol</span>
+            </div>
+          </div>
+
+          {/* SECONDARY ACTIONS */}
+          <div className="space-y-4 sm:space-y-6">
+            <button className="w-full py-4 rounded-2xl bg-white/[0.03] border border-white/5 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white/5 transition-all flex items-center justify-center gap-3 text-gray-400 hover:text-white">
+              <Globe size={16}/> GitHub Sync
             </button>
             
-            <p className="text-center text-sm text-gray-500">
-              {isLogin ? "New to the platform?" : "Already have an account?"}{' '}
+            <p className="text-center text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-gray-600">
+              {isLogin ? "No account?" : "Existing user?"}{' '}
               <button 
                 type="button"
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-indigo-400 font-bold hover:underline ml-1"
+                className="text-indigo-400 hover:text-indigo-300 transition-colors ml-1"
               >
-                {isLogin ? 'Join now' : 'Log in'}
+                {isLogin ? 'Initialize' : 'Log in'}
               </button>
             </p>
           </div>
         </div>
         
+        {/* FOOTER */}
         <button 
           onClick={onBack} 
-          className="w-full mt-8 text-xs font-bold uppercase tracking-[0.2em] text-gray-600 hover:text-white transition-colors"
+          className="w-full mt-8 sm:mt-10 text-[10px] font-black uppercase tracking-[0.4em] text-gray-700 hover:text-indigo-400 transition-colors flex items-center justify-center gap-2"
         >
-          Back to Home
+          <ShieldCheck size={14} /> Back to Home
         </button>
       </motion.div>
     </div>
   );
 }
 
-// Reusable Input Component with that "Apple" Minimalist style
 function AuthInput({ icon, ...props }: any) {
   return (
     <div className="relative group">
-      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-indigo-400 transition-colors">
+      <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-indigo-500 transition-colors duration-300">
         {icon}
       </div>
       <input 
         {...props}
-        className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-indigo-500/50 focus:bg-white/[0.07] transition-all placeholder:text-gray-600"
+        className="w-full bg-white/[0.02] border border-white/5 rounded-2xl py-4 sm:py-5 pl-14 pr-6 text-sm focus:outline-none focus:border-indigo-500/50 focus:bg-white/[0.04] transition-all placeholder:text-gray-700 placeholder:font-medium tracking-tight"
       />
     </div>
   );
