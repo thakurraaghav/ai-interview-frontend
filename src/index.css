@@ -1,11 +1,22 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
 
 body {
-  @apply bg-[#0f0f0f] text-white antialiased;
+  @apply antialiased; 
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
+
+
+:root {
+  --chart-grid: rgba(0, 0, 0, 0.05);
+}
+
+.dark {
+  --chart-grid: rgba(255, 255, 255, 0.05);
+}
+
 @theme {
-  /* This defines the shimmer animation for your buttons */
   @keyframes shimmer {
     from { transform: translateX(-100%); }
     to { transform: translateX(100%); }
