@@ -57,9 +57,9 @@ export default function AuthView({ onAuthSuccess, onBack }: Props) {
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4 }}
-        className="w-full max-w-[440px] relative z-10"
+        className="w-full max-w-110 relative z-10"
       >
-        <div className="bg-[#0A0A0A] border border-white/5 backdrop-blur-2xl rounded-[2rem] sm:rounded-[2.5rem] p-8 sm:p-12 shadow-2xl">
+        <div className="bg-[#0A0A0A] border border-white/5 backdrop-blur-2xl rounded-4xl sm:rounded-[2.5rem] p-8 sm:p-12 shadow-2xl">
           
           {/* HEADER - Adjusted for mobile */}
           <div className="text-center mb-8 sm:mb-10">
@@ -136,7 +136,7 @@ export default function AuthView({ onAuthSuccess, onBack }: Props) {
 
           {/* SECONDARY ACTIONS */}
           <div className="space-y-4 sm:space-y-6">
-            <button className="w-full py-4 rounded-2xl bg-white/[0.03] border border-white/5 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white/5 transition-all flex items-center justify-center gap-3 text-gray-400 hover:text-white">
+            <button className="w-full py-4 rounded-2xl bg-white/3 border border-white/5 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white/5 transition-all flex items-center justify-center gap-3 text-gray-400 hover:text-white">
               <Globe size={16}/> GitHub Sync
             </button>
             
@@ -173,7 +173,7 @@ function AuthInput({ icon, ...props }: any) {
       </div>
       <input 
         {...props}
-        className="w-full bg-white/[0.02] border border-white/5 rounded-2xl py-4 sm:py-5 pl-14 pr-6 text-sm focus:outline-none focus:border-indigo-500/50 focus:bg-white/[0.04] transition-all placeholder:text-gray-700 placeholder:font-medium tracking-tight"
+        className="w-full bg-white/2 border border-white/5 rounded-2xl py-4 sm:py-5 pl-14 pr-6 text-sm focus:outline-none focus:border-indigo-500/50 focus:bg-white/4 transition-all placeholder:text-gray-700 placeholder:font-medium tracking-tight"
       />
     </div>
   );

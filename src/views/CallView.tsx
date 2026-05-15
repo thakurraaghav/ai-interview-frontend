@@ -10,7 +10,7 @@ function Modal({ isOpen, title, message, confirmLabel, onConfirm, onCancel }: an
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-6">
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={onCancel}
@@ -150,11 +150,7 @@ export default function CallView({ onEnd, onBack }: Props) {
           <div className="flex items-center gap-2">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             <span className="text-[10px] font-black tracking-widest uppercase text-gray-300">Live Connection</span>
-          </div>
-          <div className="w-px h-3 bg-white/10" />
-          <span className="text-[10px] font-black tracking-widest uppercase text-indigo-400">
-            {history.length} Nodes
-          </span>
+          </div> 
         </div>
       </nav>
 
@@ -162,7 +158,7 @@ export default function CallView({ onEnd, onBack }: Props) {
       <main className="flex-1 flex flex-col items-center justify-center relative px-6">
         
         {/* Cinematic Backdrop Glow */}
-        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-[120px] transition-all duration-1000 pointer-events-none opacity-20 ${
+        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-125 h-125 rounded-full blur-[120px] transition-all duration-1000 pointer-events-none opacity-20 ${
           status === 'speaking' ? 'bg-indigo-500' : status === 'thinking' ? 'bg-amber-500' : 'bg-cyan-500'
         }`} />
 

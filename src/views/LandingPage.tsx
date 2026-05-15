@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { 
-  ArrowRight, Sparkles, Zap, Brain, MessageSquare, 
-  ShieldCheck, BarChart3, Globe, Cpu, ChevronRight 
+   Sparkles, Zap,  MessageSquare, 
+   BarChart3,  Cpu, ChevronRight 
 } from 'lucide-react';
 
 interface Props { onStart: () => void; }
@@ -11,7 +11,7 @@ export default function LandingPage({ onStart }: Props) {
     <div className="bg-[#050505] min-h-screen text-white overflow-x-hidden selection:bg-indigo-500/30 font-sans">
       
       {/* 1. Header/Nav - Responsive Padding & Layout */}
-      <nav className="fixed top-0 w-full z-[100] backdrop-blur-md border-b border-white/5 bg-black/20">
+      <nav className="fixed top-0 w-full z-100 backdrop-blur-md border-b border-white/5 bg-black/20">
         <div className="flex justify-between items-center p-4 md:p-6 max-w-7xl mx-auto">
           <div className="text-xl md:text-2xl font-bold tracking-tighter flex items-center gap-2 group cursor-pointer">
             <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-indigo-600 flex items-center justify-center shadow-[0_0_20px_rgba(79,70,229,0.4)] group-hover:scale-110 transition-transform">
@@ -39,7 +39,7 @@ export default function LandingPage({ onStart }: Props) {
       {/* 2. Hero Section - Responsive Typography & Spacing */}
       <main className="max-w-7xl mx-auto px-6 md:px-8 pt-32 md:pt-48 pb-20 md:pb-32 relative z-10 text-center">
         {/* Background Radial Glow - Scaled for mobile */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[300px] md:h-[500px] bg-indigo-600/10 blur-[80px] md:blur-[120px] rounded-full pointer-events-none -z-10" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-75 md:h-125 bg-indigo-600/10 blur-[80px] md:blur-[120px] rounded-full pointer-events-none -z-10" />
 
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -51,9 +51,9 @@ export default function LandingPage({ onStart }: Props) {
             <Sparkles size={10} className="md:w-3 md:h-3" /> Live AI Interview Intelligence
           </div>
           
-          <h1 className="text-5xl md:text-8xl lg:text-[120px] font-bold tracking-tighter leading-[1] md:leading-[0.9] mb-4">
+          <h1 className="text-5xl md:text-8xl lg:text-[120px] font-bold tracking-tighter leading-none md:leading-[0.9] mb-4">
             Refine your<br className="hidden md:block" />
-            <span className="italic text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/20"> technical edge.</span>
+            <span className="italic text-transparent bg-clip-text bg-linear-to-b from-white via-white to-white/20"> technical edge.</span>
           </h1>
           
           <p className="max-w-2xl mx-auto text-base md:text-lg lg:text-xl text-gray-400 font-light leading-relaxed px-4 md:px-0">
@@ -81,7 +81,7 @@ export default function LandingPage({ onStart }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-auto md:auto-rows-[240px]">
           
           {/* Box 1: Large Performance Insight */}
-          <BentoBox className="md:col-span-2 md:row-span-2 bg-gradient-to-br from-indigo-950/20 to-transparent min-h-[350px] md:min-h-0">
+          <BentoBox className="md:col-span-2 md:row-span-2 bg-linear-to-br from-indigo-950/20 to-transparent min-h-87.5 md:min-h-0">
              <BarChart3 size={32} className="text-indigo-500 mb-6 md:mb-8" />
              <h3 className="text-2xl md:text-3xl font-bold mb-4 tracking-tight">Executive Reporting</h3>
              <p className="text-gray-500 font-light leading-relaxed text-sm md:text-base">Get a detailed breakdown of your technical depth, communication clarity, and confidence scores immediately after your call.</p>
@@ -92,7 +92,7 @@ export default function LandingPage({ onStart }: Props) {
           </BentoBox>
 
           {/* Box 2: Voice Detection */}
-          <BentoBox className="md:col-span-2 min-h-[180px] md:min-h-0">
+          <BentoBox className="md:col-span-2 min-h-45 md:min-h-0">
              <div className="flex flex-col sm:flex-row items-start gap-4 md:gap-6">
                 <div className="p-3 rounded-xl bg-yellow-500/10 text-yellow-500 shrink-0">
                   <Zap size={24} fill="currentColor" />
@@ -105,14 +105,14 @@ export default function LandingPage({ onStart }: Props) {
           </BentoBox>
 
           {/* Box 3: Context Memory */}
-          <BentoBox className="min-h-[180px] md:min-h-0">
+          <BentoBox className="min-h-45 md:min-h-0">
              <Cpu size={24} className="text-purple-500 mb-4" />
              <h3 className="text-lg font-bold mb-1 tracking-tight">Tech Stack Context</h3>
              <p className="text-gray-500 text-xs font-light">Remembers your history and specific project architecture.</p>
           </BentoBox>
 
           {/* Box 4: Speech to Text */}
-          <BentoBox className="min-h-[180px] md:min-h-0">
+          <BentoBox className="min-h-45 md:min-h-0">
              <MessageSquare size={24} className="text-blue-500 mb-4" />
              <h3 className="text-lg font-bold mb-1 tracking-tight">Whisper-Fast STT</h3>
              <p className="text-gray-500 text-xs font-light">Industry-leading transcription with zero latency.</p>
@@ -133,7 +133,7 @@ export default function LandingPage({ onStart }: Props) {
 
 function Badge({ children }: any) {
   return (
-    <div className="px-2 md:px-3 py-1 rounded-md bg-white/[0.03] border border-white/10 text-gray-500 text-[8px] md:text-[9px] font-black uppercase tracking-widest">
+    <div className="px-2 md:px-3 py-1 rounded-md bg-white/3 border border-white/10 text-gray-500 text-[8px] md:text-[9px] font-black uppercase tracking-widest">
       {children}
     </div>
   );
@@ -143,10 +143,10 @@ function BentoBox({ children, className }: any) {
   return (
     <motion.div 
       whileHover={{ y: -5 }}
-      className={`relative group p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] border border-white/5 bg-[#0A0A0A] overflow-hidden transition-all duration-500 hover:border-indigo-500/30 hover:shadow-[0_0_40px_rgba(79,70,229,0.05)] ${className}`}
+      className={`relative group p-6 md:p-10 rounded-3xl md:rounded-[2.5rem] border border-white/5 bg-[#0A0A0A] overflow-hidden transition-all duration-500 hover:border-indigo-500/30 hover:shadow-[0_0_40px_rgba(79,70,229,0.05)] ${className}`}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      <div className="absolute -inset-px bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-linear-to-br from-white/2 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute -inset-px bg-linear-to-br from-indigo-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       
       <div className="relative z-10 h-full flex flex-col">
         {children}

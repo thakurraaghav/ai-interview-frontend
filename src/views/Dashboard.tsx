@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
    History,   Award, ChevronRight, 
-  ChevronLeft, LogOut, Trash2, Mic, Building2, Calendar,TrendingUp,
-  MessageSquare, Sparkles, FileCheck, AlertCircle, File, LayoutDashboard,
-  Zap, Search, Bell, Settings
+ChevronLeft, LogOut, Trash2, Mic, Building2, Calendar,TrendingUp,
+MessageSquare, Sparkles, FileCheck, AlertCircle, File, LayoutDashboard,
+Zap, Search, Bell, Settings
 } from 'lucide-react';
 import { 
   ResponsiveContainer,    
@@ -60,6 +60,7 @@ export default function Dashboard({ onNewCall }: Props) {
   );
 
   const interviews = userData?.interviews || [];
+
   const trendData = [...interviews].reverse().map(s => ({
     date: new Date(s.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
     score: s.score
@@ -85,7 +86,7 @@ if (selectedReport) {
             Back to Dashboard
           </button>
           
-          <div className="flex items-center gap-4 px-5 py-2 rounded-2xl bg-white/[0.03] border border-white/5">
+          <div className="flex items-center gap-4 px-5 py-2 rounded-2xl bg-white/3 border border-white/5">
             <div className="flex items-center gap-2">
               <Calendar size={14} className="text-indigo-500" />
               <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
@@ -136,10 +137,10 @@ if (selectedReport) {
               {(selectedReport.transcript || []).length > 0 ? (
                 selectedReport.transcript.map((entry: any, i: number) => (
                   <div key={i} className={`flex flex-col ${entry.role === 'user' ? 'items-end' : 'items-start'}`}>
-                    <div className={`group relative max-w-[90%] md:max-w-[80%] p-6 md:p-8 rounded-[2rem] transition-all duration-500 ${
+                    <div className={`group relative max-w-[90%] md:max-w-[80%] p-6 md:p-8 rounded-4xl transition-all duration-500 ${
                       entry.role === 'user' 
                         ? 'bg-indigo-500/5 border border-indigo-500/10 text-white' 
-                        : 'bg-white/[0.02] border border-white/5 text-gray-400'
+                        : 'bg-white/2 border border-white/5 text-gray-400'
                     }`}>
                       <span className={`text-[8px] font-black uppercase tracking-widest opacity-30 mb-4 block ${
                         entry.role === 'user' ? 'text-right' : 'text-left'
@@ -176,13 +177,13 @@ if (selectedReport) {
     <div className="flex h-screen bg-[#050505] text-white overflow-hidden font-sans selection:bg-indigo-500/30">
       
       {/* 1. STATIC SIDEBAR */}
-      <aside className="w-64 border-r border-white/5 flex flex-col p-6 hidden lg:flex shrink-0">
+      <aside className="w-64 border-r border-white/5 flex flex-col p-6 lg:flex shrink-0">
         <div className="mb-10 px-2 flex items-center gap-2 text-indigo-500 font-black tracking-tighter text-2xl italic">
-          <Zap size={24} fill="currentColor" /> RecruitAI
+          <Zap size={24} fill="text-indigo-500" /> RecruitAI
         </div>
         
         <nav className="space-y-2 flex-1">
-          <SidebarLink icon={<LayoutDashboard size={18}/>} label="Dashboard" active />
+          <SidebarLink icon={<LayoutDashboard size={18}/>} label="Dashboard" active/>
           <SidebarLink icon={<History size={18}/>} label="History" />
           <SidebarLink icon={<File size={18}/>} label="Resume assessment" />
           <SidebarLink icon={<Building2 size={18}/>} label="Company Preparation" />
@@ -228,7 +229,7 @@ if (selectedReport) {
           </header>
 
           {/* HERO WELCOME SECTION */}
-          <section className="relative p-8 md:p-12 rounded-[2.5rem] bg-gradient-to-br from-indigo-900/20 via-transparent to-transparent border border-white/10 overflow-hidden shadow-2xl">
+          <section className="relative p-8 md:p-12 rounded-[2.5rem] bg-linear-to-br from-indigo-900/20 via-transparent to-transparent border border-white/10 overflow-hidden shadow-2xl">
             <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
               <div className="text-center md:text-left">
                 <h2 className="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tighter italic">
@@ -261,7 +262,7 @@ if (selectedReport) {
               </div>
             </div>
             {/* Background Atmosphere */}
-            <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-indigo-500/5 to-transparent pointer-events-none" />
+            <div className="absolute top-0 right-0 w-1/2 h-full bg-linear-to-l from-indigo-500/5 to-transparent pointer-events-none" />
           </section>
 
           {/* QUICK ACTIONS SECTION */}
@@ -297,8 +298,8 @@ if (selectedReport) {
                   <TrendingUp size={14} className="text-indigo-500" /> Recent Performance
                 </h4>
               </div>
-              <div className="h-[250px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
+              <div className="h-62.5 w-full min-h-0">
+                <ResponsiveContainer width="100%" aspect={3}>
                   <LineChart data={trendData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
                     <XAxis dataKey="date" stroke="#333" fontSize={10} tickLine={false} axisLine={false} />
@@ -344,7 +345,7 @@ if (selectedReport) {
                     key={session.id || index} 
                     onClick={() => setSelectedReport(session)}
                     whileHover={{ scale: 1.01, backgroundColor: "rgba(255,255,255,0.03)" }}
-                    className="p-5 rounded-[2rem] bg-[#111] border border-white/5 flex items-center justify-between group cursor-pointer transition-all"
+                    className="p-5 rounded-4xl bg-[#111] border border-white/5 flex items-center justify-between group cursor-pointer transition-all"
                   >
                     <div className="flex items-center gap-6">
                       <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 font-bold italic group-hover:bg-indigo-500 group-hover:text-white transition-all">
@@ -373,7 +374,7 @@ if (selectedReport) {
       {/* REUSABLE DELETE MODAL */}
       <AnimatePresence>
         {deleteModal.isOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+          <div className="fixed inset-0 z-100 flex items-center justify-center p-6">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setDeleteModal({ isOpen: false, id: null })} className="absolute inset-0 bg-black/80 backdrop-blur-md" />
             <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="relative bg-[#111] border border-white/10 p-10 rounded-[2.5rem] max-w-sm w-full text-center shadow-2xl">
               <AlertCircle size={40} className="mx-auto text-red-500 mb-6" />
@@ -399,7 +400,7 @@ function QuickActionCard({ icon, title, description, onClick, highlight = false 
       whileHover={{ y: -4, backgroundColor: "rgba(255,255,255,0.04)" }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className={`cursor-pointer p-6 rounded-[2rem] border transition-all flex items-center gap-5 ${
+      className={`cursor-pointer p-6 rounded-4xl border transition-all flex items-center gap-5 ${
         highlight ? 'bg-indigo-600/5 border-indigo-500/20' : 'bg-[#111] border-white/5'
       }`}
     >
