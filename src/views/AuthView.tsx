@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, User, ArrowRight, Globe, Zap, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Globe, ChevronLeft, ShieldCheck } from 'lucide-react';
 
 interface Props { 
   onAuthSuccess: (user: any) => void; 
@@ -36,7 +36,7 @@ export default function AuthView({ onAuthSuccess, onBack }: Props) {
         localStorage.setItem('token', data.token);
         onAuthSuccess(data.user);
       } else {
-        alert(data.message || "Authentication failed. Please try again.");
+        alert(data.message || "Something went wrong. Please check your details.");
       }
     } catch (error) {
       console.error("Auth Connection Error:", error);
@@ -47,48 +47,54 @@ export default function AuthView({ onAuthSuccess, onBack }: Props) {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center p-4 sm:p-6 relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-[#FAF9F6] dark:bg-[#0A0A0A] text-[#0A0A0A] dark:text-[#FAF9F6] flex items-center justify-center p-6 relative overflow-hidden font-sans tracking-tight transition-colors duration-500">
       
-      {/* 1. RESPONSIVE BACKGROUND LIGHTING */}
-      <div className="absolute top-[-5%] left-[-5%] w-[60%] sm:w-[40%] h-[40%] bg-indigo-600/10 blur-[100px] sm:blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-5%] right-[-5%] w-[50%] sm:w-[30%] h-[30%] bg-indigo-900/10 blur-[80px] sm:blur-[100px] rounded-full pointer-events-none" />
+      {/* ARCHITECTURAL STRUCTURAL LINES */}
+      <div className="absolute top-0 left-1/4 w-px h-full bg-[#0A0A0A]/3 dark:bg-white/[0.02] pointer-events-none" />
+      <div className="absolute top-0 left-3/4 w-px h-full bg-[#0A0A0A]/3 dark:bg-white/[0.02] pointer-events-none" />
 
       <motion.div 
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.4 }}
-        className="w-full max-w-110 relative z-10"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="w-full max-w-[450px] relative z-10"
       >
-        <div className="bg-[#0A0A0A] border border-white/5 backdrop-blur-2xl rounded-4xl sm:rounded-[2.5rem] p-8 sm:p-12 shadow-2xl">
+        {/* --- DYNAMIC APALING THEMED CARD CONTAINER --- */}
+        <div className="bg-white dark:bg-[#111111]/60 border border-[#0A0A0A]/5 dark:border-white/5 rounded-[2.5rem] p-10 md:p-14 shadow-xl dark:shadow-none backdrop-blur-xl transition-colors duration-500">
           
-          {/* HEADER - Adjusted for mobile */}
-          <div className="text-center mb-8 sm:mb-10">
-            <motion.div 
-              className="inline-flex p-3 rounded-2xl bg-indigo-600/10 text-indigo-500 mb-5 sm:mb-6 border border-indigo-500/20 shadow-lg shadow-indigo-500/5"
+          {/* HEADER LAYER */}
+          <div className="mb-10 text-left">
+            <button 
+              onClick={onBack}
+              className="inline-flex items-center gap-1.5 text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-[9px] font-bold uppercase tracking-[0.25em] mb-8 transition-colors cursor-pointer"
             >
-              <Zap size={24} fill="currentColor" className="sm:w-7 sm:h-7" />
-            </motion.div>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter mb-2 italic">
-              {isLogin ? 'Access Portal' : 'Create Identity'}
+              <ChevronLeft size={12} /> Back to main
+            </button>
+            
+            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-[#0A0A0A] dark:text-[#FAF9F6]">
+              {isLogin ? 'Welcome Back.' : 'Get Started.'}
             </h2>
-            <p className="text-gray-500 text-[10px] sm:text-xs font-black uppercase tracking-[0.2em]">
-              {isLogin ? 'Initialize Session' : 'Register Credentials'}
+            <p className="text-gray-400 dark:text-gray-500 text-xs mt-2 font-normal leading-relaxed">
+              {isLogin 
+                ? 'Sign in to jump straight back into your interview workspace.' 
+                : 'Create an account to begin engineering your preparation loops.'}
             </p>
           </div>
 
-          {/* FORM */}
+          {/* INPUT FORM */}
           <form className="space-y-4" onSubmit={handleSubmit}>
             <AnimatePresence mode="wait">
               {!isLogin && (
                 <motion.div
-                  initial={{ opacity: 0, y: -10 }}
+                  initial={{ opacity: 0, y: -8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.2 }}
                 >
                   <AuthInput 
-                    icon={<User size={18} />} 
+                    icon={<User size={15} />} 
                     type="text" 
-                    placeholder="Full Name" 
+                    placeholder="Your Full Name" 
                     value={name}
                     onChange={(e: any) => setName(e.target.value)}
                     required
@@ -98,7 +104,7 @@ export default function AuthView({ onAuthSuccess, onBack }: Props) {
             </AnimatePresence>
 
             <AuthInput 
-              icon={<Mail size={18} />} 
+              icon={<Mail size={15} />} 
               type="email" 
               placeholder="Email Address" 
               value={email}
@@ -107,7 +113,7 @@ export default function AuthView({ onAuthSuccess, onBack }: Props) {
             />
             
             <AuthInput 
-              icon={<Lock size={18} />} 
+              icon={<Lock size={15} />} 
               type="password" 
               placeholder="Password" 
               value={password}
@@ -117,63 +123,61 @@ export default function AuthView({ onAuthSuccess, onBack }: Props) {
             
             <button 
               disabled={loading}
-              className="group w-full py-4 sm:py-5 bg-white text-black rounded-2xl font-black uppercase text-[10px] sm:text-[11px] tracking-[0.3em] mt-6 hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-center gap-3 disabled:opacity-50 active:scale-95 shadow-lg"
+              className="group w-full py-4.5 bg-[#0A0A0A] dark:bg-[#FAF9F6] text-[#FAF9F6] dark:text-[#0A0A0A] rounded-sm font-black uppercase text-[10px] tracking-[0.25em] mt-6 hover:bg-indigo-600 dark:hover:bg-indigo-500 hover:text-white dark:hover:text-white transition-all flex items-center justify-center gap-3 disabled:opacity-50 active:scale-98 cursor-pointer shadow-xs"
             >
-              {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Join Now')} 
-              {!loading && <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />}
+              {loading ? 'Verifying...' : (isLogin ? 'Continue' : 'Create Account')} 
+              {!loading && <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />}
             </button>
           </form>
 
-          {/* DIVIDER */}
-          <div className="relative my-8 sm:my-10">
+          {/* DIVIDER HAIRLINE */}
+          <div className="relative my-8">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-white/5"></span>
+              <span className="w-full border-t border-[#0A0A0A]/5 dark:border-white/5"></span>
             </div>
-            <div className="relative flex justify-center text-[10px] uppercase font-black tracking-widest">
-              <span className="bg-[#0A0A0A] px-4 text-gray-600">Secure Protocol</span>
+            <div className="relative flex justify-center text-[8px] font-mono font-bold uppercase tracking-[0.3em]">
+              <span className="bg-white dark:bg-[#111111] px-4 text-gray-400 dark:text-gray-500 transition-colors duration-500">Verification</span>
             </div>
           </div>
 
-          {/* SECONDARY ACTIONS */}
-          <div className="space-y-4 sm:space-y-6">
-            <button className="w-full py-4 rounded-2xl bg-white/3 border border-white/5 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white/5 transition-all flex items-center justify-center gap-3 text-gray-400 hover:text-white">
-              <Globe size={16}/> GitHub Sync
+          {/* ACCESS PLATFORMS */}
+          <div className="space-y-6">
+            <button className="w-full py-4 rounded-sm bg-[#0A0A0A]/5 dark:bg-white/5 border border-transparent text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#0A0A0A] dark:hover:bg-[#FAF9F6] hover:text-[#FAF9F6] dark:hover:text-[#0A0A0A] transition-all flex items-center justify-center gap-3 text-gray-500 dark:text-gray-400 cursor-pointer">
+              <Globe size={14}/> Sync Github Profile
             </button>
             
-            <p className="text-center text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-gray-600">
-              {isLogin ? "No account?" : "Existing user?"}{' '}
+            <p className="text-center text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+              {isLogin ? "New to RecruitAI?" : "Have an account?"}{' '}
               <button 
                 type="button"
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-indigo-400 hover:text-indigo-300 transition-colors ml-1"
+                className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 font-black tracking-normal transition-colors ml-1 uppercase cursor-pointer"
               >
-                {isLogin ? 'Initialize' : 'Log in'}
+                {isLogin ? 'Register Here' : 'Log In Instead'}
               </button>
             </p>
           </div>
         </div>
         
-        {/* FOOTER */}
-        <button 
-          onClick={onBack} 
-          className="w-full mt-8 sm:mt-10 text-[10px] font-black uppercase tracking-[0.4em] text-gray-700 hover:text-indigo-400 transition-colors flex items-center justify-center gap-2"
-        >
-          <ShieldCheck size={14} /> Back to Home
-        </button>
+        {/* INTERFACE PROTOCOL FOOTER */}
+        <div className="w-full mt-8 text-[9px] font-mono font-bold uppercase tracking-[0.35em] text-gray-500 dark:text-gray-600 flex items-center justify-center gap-2 pointer-events-none">
+          <ShieldCheck size={13} /> Security standard verification
+        </div>
       </motion.div>
     </div>
   );
 }
 
+// --- DYNAMIC CONTROLLED HOVER INPUT FIELD ---
 function AuthInput({ icon, ...props }: any) {
   return (
     <div className="relative group">
-      <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-indigo-500 transition-colors duration-300">
+      <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-600 transition-colors duration-300 pointer-events-none">
         {icon}
       </div>
       <input 
         {...props}
-        className="w-full bg-white/2 border border-white/5 rounded-2xl py-4 sm:py-5 pl-14 pr-6 text-sm focus:outline-none focus:border-indigo-500/50 focus:bg-white/4 transition-all placeholder:text-gray-700 placeholder:font-medium tracking-tight"
+        className="w-full bg-[#0A0A0A]/5 dark:bg-white/5 border border-transparent rounded-sm py-4.5 pl-13 pr-6 text-xs text-[#0A0A0A] dark:text-[#FAF9F6] focus:outline-none focus:border-indigo-600/30 focus:bg-white dark:focus:bg-[#0A0A0A] transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600 placeholder:font-medium tracking-tight"
       />
     </div>
   );

@@ -45,25 +45,27 @@ export default function ResumeView({ onBack, selectedRole }: ResumeLabProps) {
     <motion.div 
       initial={{ opacity: 0, y: 10 }} 
       animate={{ opacity: 1, y: 0 }} 
-      className="space-y-10"
+      className="space-y-10 pb-20 font-sans tracking-tight"
     >
+      {/* ADAPTIVE NAV BACK BUTTON */}
       <button 
         onClick={onBack} 
-        className="flex items-center gap-2 text-gray-500 hover:text-white transition-all uppercase text-[10px] font-black tracking-widest"
+        className="flex items-center gap-2 text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white transition-all uppercase text-[9px] font-mono font-black tracking-[0.3em] cursor-pointer"
       >
-        <ChevronLeft size={16} /> Back to Dashboard
+        <ChevronLeft size={14} /> Back to Dashboard
       </button>
 
       {!result ? (
-        <div className="p-20 border-2 border-dashed border-white/10 rounded-[3.5rem] bg-white/[0.02] flex flex-col items-center justify-center text-center">
-          <div className="p-6 rounded-3xl bg-indigo-600/10 text-indigo-500 mb-6">
-            {analyzing ? <Loader2 className="animate-spin" size={40} /> : <Upload size={40} />}
+        /* --- HIGH CONTRAST INGESTION BOX INTERFACE --- */
+        <div className="p-16 md:p-24 border border-dashed border-neutral-200 dark:border-white/10 rounded-[2.5rem] bg-white dark:bg-[#111111]/30 flex flex-col items-center justify-center text-center transition-colors duration-500">
+          <div className="p-5 rounded-xl bg-indigo-600/5 text-indigo-500 mb-6">
+            {analyzing ? <Loader2 className="animate-spin" size={32} /> : <Upload size={32} />}
           </div>
-          <h2 className="text-3xl font-bold italic mb-2 tracking-tighter">
-            {analyzing ? 'Hannah is Analyzing...' : 'Resume Intelligence'}
+          <h2 className="text-3xl font-black uppercase tracking-tighter mb-2 text-black dark:text-white">
+            {analyzing ? 'Analyzing Framework Matrices...' : 'Resume Intelligence'}
           </h2>
-          <p className="text-gray-500 max-w-sm mb-8 text-sm font-light leading-relaxed">
-            Upload your PDF. Hannah will benchmark it against <span className="text-white font-medium">{selectedRole}</span> standards.
+          <p className="text-gray-400 dark:text-gray-500 max-w-sm mb-8 text-xs font-light leading-relaxed">
+            Upload your PDF portfolio. Hannah will benchmark its structural density against <span className="text-indigo-600 dark:text-indigo-400 font-medium">{selectedRole}</span> standards.
           </p>
           
           <input 
@@ -76,31 +78,35 @@ export default function ResumeView({ onBack, selectedRole }: ResumeLabProps) {
           />
           <label 
             htmlFor="resume-input" 
-            className={`px-10 py-4 bg-white text-black rounded-full font-bold cursor-pointer hover:scale-105 transition-all text-[11px] uppercase tracking-[0.2em] ${analyzing ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`px-8 py-4 bg-[#0A0A0A] dark:bg-[#FAF9F6] text-[#FAF9F6] dark:text-[#0A0A0A] rounded-sm font-black cursor-pointer hover:bg-indigo-600 dark:hover:bg-indigo-500 hover:text-white dark:hover:text-white transition-all text-[10px] uppercase tracking-[0.25em] ${analyzing ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            {analyzing ? 'Processing...' : 'Select PDF'}
+            {analyzing ? 'Processing Ingestion...' : 'Select PDF Target'}
           </label>
         </div>
       ) : (
-        <div className="grid grid-cols-12 gap-6">
-          <div className="col-span-12 lg:col-span-4 p-12 rounded-[3.5rem] bg-indigo-600 shadow-2xl shadow-indigo-500/20">
-             <span className="text-[10px] font-black uppercase tracking-widest text-white/60">ATS Match Score</span>
-             <div className="text-8xl font-bold mt-4 tracking-tighter italic">{result.score}%</div>
+        /* --- STARK EDITORIAL RESULTS LAYOUT --- */
+        <div className="grid grid-cols-12 gap-6 items-stretch">
+          
+          {/* Left Metrics Density Block */}
+          <div className="col-span-12 lg:col-span-4 p-10 rounded-[2.5rem] bg-[#0A0A0A] dark:bg-[#111111] flex flex-col justify-between text-left shadow-xl dark:shadow-none transition-colors duration-500">
+             <span className="text-[9px] font-mono font-black uppercase tracking-[0.3em] text-gray-500">ATS Match Density</span>
+             <div className="text-7xl font-bold mt-10 mb-4 tracking-tighter italic text-white">{result.score}%</div>
           </div>
           
-          <div className="col-span-12 lg:col-span-8 p-12 rounded-[3.5rem] bg-[#0A0A0A] border border-white/10 flex flex-col justify-center relative overflow-hidden">
-             <CheckCircle className="absolute -right-6 -bottom-6 w-48 h-48 text-white/[0.02] -rotate-12" />
-             <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500 mb-4 block">AI Analysis Feedback</span>
-             <p className="text-2xl md:text-3xl font-bold italic tracking-tight text-white leading-tight relative z-10">
+          {/* Right Adaptive Feedback Container */}
+          <div className="col-span-12 lg:col-span-8 p-10 md:p-12 rounded-[2.5rem] bg-white dark:bg-[#111111]/40 border border-neutral-200/50 dark:border-white/5 flex flex-col justify-center relative overflow-hidden transition-colors duration-500">
+             <span className="text-[9px] font-mono font-black uppercase tracking-[0.3em] text-indigo-600 dark:text-indigo-400 mb-4 block">// SYSTEM CRITIQUE METRICS</span>
+             <p className="text-xl md:text-2xl font-light italic tracking-tight text-black dark:text-white leading-relaxed relative z-10">
                "{result.feedback}"
              </p>
           </div>
           
+          {/* Reset Secondary Vector */}
           <button 
             onClick={() => setResult(null)}
-            className="col-span-12 text-center text-gray-600 hover:text-white transition-colors text-[10px] font-black uppercase tracking-[0.4em]"
+            className="col-span-12 text-center text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors text-[9px] font-mono font-black uppercase tracking-[0.4em] pt-4 cursor-pointer"
           >
-            Analyze another resume
+            [ Analyze Another Document ]
           </button>
         </div>
       )}

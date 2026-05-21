@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
    History, ChevronRight, 
-   ChevronLeft, LogOut, Mic, Building2, Calendar, 
+   ChevronLeft, LogOut, Mic, Building2, 
    Sparkles, FileCheck, AlertCircle, File, LayoutDashboard,
    Zap, Search, Bell, Settings, Upload, Loader2, CheckCircle,
    Trash2, FileText, Sun, Moon
@@ -12,10 +12,16 @@ import {
   LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid 
 } from 'recharts';
 
-// --- THEME TOGGLE COMPONENT ---
-function ThemeToggle() {
-  const [isDark, setIsDark] = useState(true);
+import ReportView from './ReportView';
+import CompanyPrep from '../components/CompanyPrep';
 
+// --- THEME TOGGLE COMPONENT ---
+interface ThemeToggleProps {
+  isDark: boolean;
+  setIsDark: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+function ThemeToggle({ isDark, setIsDark }: ThemeToggleProps) {
   useEffect(() => {
     const root = window.document.documentElement;
     if (isDark) {
@@ -28,7 +34,7 @@ function ThemeToggle() {
   return (
     <button 
       onClick={() => setIsDark(!isDark)}
-      className="p-2 bg-gray-100 dark:bg-[#111] rounded-lg border border-gray-200 dark:border-white/5 text-gray-500 hover:text-indigo-500 transition-all"
+      className="p-2 bg-gray-100 dark:bg-[#111] rounded-lg border border-gray-200 dark:border-white/5 text-gray-500 hover:text-indigo-500 transition-all cursor-pointer flex items-center justify-center"
     >
       {isDark ? <Sun size={18} /> : <Moon size={18} />}
     </button>
@@ -80,7 +86,7 @@ function ResumeLab({ onBack, selectedRole, fetchProfile }: { onBack: () => void;
       </button>
 
       {!result ? (
-        <div className="p-20 border-2 border-dashed border-gray-200 dark:border-white/10 rounded-[3.5rem] bg-gray-50 dark:bg-white/[0.02] flex flex-col items-center justify-center text-center">
+        <div className="p-20 border-2 border-dashed border-gray-200 dark:border-white/10 rounded-[3.5rem] bg-gray-50 dark:bg-white/2 flex flex-col items-center justify-center text-center">
           <div className="p-6 rounded-3xl bg-indigo-600/10 text-indigo-500 mb-6">
             {analyzing ? <Loader2 className="animate-spin" size={40} /> : <Upload size={40} />}
           </div>
@@ -102,7 +108,7 @@ function ResumeLab({ onBack, selectedRole, fetchProfile }: { onBack: () => void;
              <div className="text-8xl font-bold mt-4 tracking-tighter italic text-white">{result.score}%</div>
           </div>
           <div className="col-span-12 lg:col-span-8 p-12 rounded-[3.5rem] bg-gray-100 dark:bg-[#0A0A0A] border border-gray-200 dark:border-white/10 flex flex-col justify-center relative overflow-hidden">
-             <CheckCircle className="absolute -right-6 -bottom-6 w-48 h-48 text-black/[0.02] dark:text-white/[0.02] -rotate-12" />
+             <CheckCircle className="absolute -right-6 -bottom-6 w-48 h-48 text-black/2 dark:text-white/2 -rotate-12" />
              <p className="text-2xl md:text-3xl font-bold italic tracking-tight text-black dark:text-white leading-tight relative z-10">
                "{result.feedback}"
              </p>
@@ -117,14 +123,18 @@ function ResumeLab({ onBack, selectedRole, fetchProfile }: { onBack: () => void;
 }
 
 // --- MAIN DASHBOARD ---
-interface Props { onNewCall: (role: string) => void; }
+interface DashboardProps { 
+  onNewCall: (role: string) => void; 
+  isDark: boolean;
+  setIsDark: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-export default function Dashboard({ onNewCall }: Props) {
+export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardProps) {
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedReport, setSelectedReport] = useState<any>(null);
   const [selectedRole, setSelectedRole] = useState("Fullstack Developer");
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'resume' | 'history'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'resume' | 'history' | 'company'>('dashboard');
   const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; id: string | null; type?: 'interview' | 'resume' }>({ isOpen: false, id: null });
   const [selectedResume, setSelectedResume] = useState<any>(null);
 
@@ -183,37 +193,12 @@ export default function Dashboard({ onNewCall }: Props) {
     score: s.score
   })).slice(-10);
 
-  // --- DETAIL VIEW LOGIC ---
   if (selectedReport) {
     return (
-      <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="min-h-screen bg-white dark:bg-[#050505] text-black dark:text-white p-6 md:p-12 overflow-y-auto custom-scrollbar">
-        <div className="max-w-5xl mx-auto space-y-10">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <button onClick={() => setSelectedReport(null)} className="group flex items-center gap-2 text-gray-500 hover:text-black dark:hover:text-white transition-all uppercase text-[10px] font-black tracking-[0.3em]">
-              <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back to Dashboard
-            </button>
-            <div className="flex items-center gap-4 px-5 py-2 rounded-2xl bg-gray-50 dark:bg-white/3 border border-gray-200 dark:border-white/5">
-              <Calendar size={14} className="text-indigo-500" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">
-                {new Date(selectedReport.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-              </span>
-              <div className="w-px h-3 bg-gray-200 dark:bg-white/10" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500">{selectedReport.role}</span>
-            </div>
-          </div>
-          <div className="grid grid-cols-12 gap-6">
-            <div className="col-span-12 lg:col-span-4 p-10 rounded-[3rem] bg-indigo-600 shadow-xl shadow-indigo-500/10 transition-all hover:scale-[1.01]">
-               <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Performance Grade</span>
-               <div className="text-8xl font-bold mt-4 tracking-tighter italic drop-shadow-2xl text-white">{selectedReport.score}<span className="text-3xl not-italic opacity-40">%</span></div>
-               <Zap className="absolute -right-6 -bottom-6 w-40 h-40 text-white/5 -rotate-12 pointer-events-none" />
-            </div>
-            <div className="col-span-12 lg:col-span-8 p-10 rounded-[3rem] bg-gray-50 dark:bg-[#0A0A0A] border border-gray-200 dark:border-white/10 backdrop-blur-3xl flex flex-col justify-center relative">
-               <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500 mb-4 block">Executive Summary</span>
-               <h3 className="text-2xl md:text-4xl font-bold italic tracking-tight text-black dark:text-white leading-[1.15]">"{selectedReport.verdict}"</h3>
-            </div>
-          </div>
-        </div>
-      </motion.div>
+      <ReportView 
+        data={selectedReport} 
+        onDashboard={() => setSelectedReport(null)} 
+      />
     );
   }
 
@@ -240,7 +225,7 @@ export default function Dashboard({ onNewCall }: Props) {
             </div>
             
             <div className="col-span-12 lg:col-span-8 p-12 rounded-[3.5rem] bg-gray-50 dark:bg-[#0A0A0A] border border-gray-200 dark:border-white/10 flex flex-col justify-center relative overflow-hidden">
-               <CheckCircle className="absolute -right-6 -bottom-6 w-48 h-48 text-black/[0.02] dark:text-white/[0.02] -rotate-12" />
+               <CheckCircle className="absolute -right-6 -bottom-6 w-48 h-48 text-black/2 dark:text-white/2 -rotate-12" />
                <span className="text-[10px] font-black uppercase tracking-widest text-purple-500 mb-4 block">AI Feedback</span>
                <p className="text-2xl md:text-3xl font-bold italic tracking-tight text-black dark:text-white leading-tight relative z-10">
                  "{selectedResume.feedback}"
@@ -262,11 +247,11 @@ export default function Dashboard({ onNewCall }: Props) {
           <SidebarLink icon={<LayoutDashboard size={18}/>} label="Dashboard" active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} />
           <SidebarLink icon={<History size={18}/>} label="History" active={activeTab === 'history'} onClick={() => setActiveTab('history')}/>
           <SidebarLink icon={<File size={18}/>} label="Resume assessment" active={activeTab === 'resume'} onClick={() => setActiveTab('resume')} />
-          <SidebarLink icon={<Building2 size={18}/>} label="Company Preparation" />
+          <SidebarLink icon={<Building2 size={18}/>} label="Company Preparation" active={activeTab === 'company'} onClick={() => setActiveTab('company')}/>
           <SidebarLink icon={<Settings size={18}/>} label="Settings" />
         </nav>
         <div className="mt-auto pt-6 border-t border-gray-100 dark:border-white/5 space-y-4">
-          <ThemeToggle />
+          <ThemeToggle isDark={isDark} setIsDark={setIsDark}/>
           <button onClick={handleLogout} className="flex items-center gap-3 p-3 w-full text-gray-400 hover:text-red-500 transition-colors text-[10px] font-black uppercase tracking-[0.2em]">
             <LogOut size={16} /> Logout
           </button>
@@ -303,7 +288,20 @@ export default function Dashboard({ onNewCall }: Props) {
                          <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)} className="bg-transparent text-[10px] font-black uppercase outline-none text-black dark:text-white cursor-pointer px-4">
                            <option value="Frontend Developer" className="bg-white dark:bg-[#111]">Frontend Developer</option>
                            <option value="Backend Developer" className="bg-white dark:bg-[#111]">Backend Developer</option>
+                           <option value="Software Engineer" className="bg-white dark:bg-[#111]">Software Engineer</option>
                            <option value="Fullstack Developer" className="bg-white dark:bg-[#111]">Fullstack Developer</option>
+                           <option value="Cloud Engineer" className="bg-white dark:bg-[#111]">Cloud Engineer</option>
+                           <option value="Site Reliability Engineer" className="bg-white dark:bg-[#111]">Site Reliability Engineer</option>
+                           <option value="Security Engineer" className="bg-white dark:bg-[#111]">Security Engineer</option>
+                           <option value="Mobile App Developer" className="bg-white dark:bg-[#111]">Mobile App Developer</option>
+                           <option value="DevOps Engineer" className="bg-white dark:bg-[#111]">DevOps Engineer</option>
+                           <option value="Game Developer" className="bg-white dark:bg-[#111]">Game Developer</option>
+                           <option value="AI/ML Engineer" className="bg-white dark:bg-[#111]">AI/ML Engineer</option>
+                           <option value="Data Scientists" className="bg-white dark:bg-[#111]">Data Scientists</option>
+                           <option value="Product Manager" className="bg-white dark:bg-[#111]">Product Manager</option>
+                           <option value="Project Designer" className="bg-white dark:bg-[#111]">Project Designer</option>
+                           <option value="Business Analyst" className="bg-white dark:bg-[#111]">Business Analyst</option>
+                           <option value="Technical Recruiter" className="bg-white dark:bg-[#111]">Technical Recruiter</option>
                          </select>
                          <button onClick={() => onNewCall(selectedRole)} className="px-8 py-4 bg-indigo-600 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-xl hover:bg-indigo-500 transition-all shadow-lg flex items-center gap-2">Start Session <ChevronRight size={15} /></button>
                       </div>
@@ -314,7 +312,7 @@ export default function Dashboard({ onNewCall }: Props) {
                 <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <QuickActionCard icon={<Mic className="text-indigo-500 dark:text-indigo-400" />} title="Start Interview" description="Live audio simulation" onClick={() => onNewCall(selectedRole)} highlight />
                   <QuickActionCard icon={<FileCheck className="text-purple-500 dark:text-purple-400" />} title="Resume Prep" description="Assessment & Grade" onClick={() => setActiveTab('resume')} />
-                  <QuickActionCard icon={<Building2 className="text-purple-500 dark:text-purple-400" />} title="Company Prep" description="AI Candidate Evaluation" onClick={() => {}} />
+                  <QuickActionCard icon={<Building2 className="text-purple-500 dark:text-purple-400" />} title="Company Prep" description="AI Candidate Evaluation" onClick={() => setActiveTab('company')} />
                 </section>
 
                 <div className="grid grid-cols-12 gap-6">
@@ -346,6 +344,8 @@ export default function Dashboard({ onNewCall }: Props) {
               </motion.div>
             ) : activeTab === 'resume' ? (
               <ResumeLab key="resume" onBack={() => setActiveTab('dashboard')} selectedRole={selectedRole} fetchProfile={fetchProfile}/>
+            ) : activeTab === 'company' ? (
+              <CompanyPrep key="company" selectedRole={selectedRole} />
             ) : (
               <motion.div key="history" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-12 pb-20">
                 <div className="flex items-center justify-between">
@@ -384,11 +384,15 @@ export default function Dashboard({ onNewCall }: Props) {
   );
 }
 
-// --- HELPER COMPONENTS ---
+// --- HELPER COMPONENTS (💡 TRANSITION HOVER FIX COMPLETED HERE) ---
 function HistoryItem({ data, onClick, onDelete, type }: any) {
   const isInterview = type === 'interview';
   return (
-    <motion.div onClick={onClick} whileHover={{ x: 4, backgroundColor: "rgba(0,0,0,0.02)" }} className="p-5 rounded-4xl bg-gray-50 dark:bg-[#111] border border-gray-100 dark:border-white/5 flex items-center justify-between group cursor-pointer transition-all">
+    <motion.div 
+      onClick={onClick} 
+      whileHover={{ x: 4 }} 
+      className="p-5 rounded-4xl bg-gray-50 dark:bg-[#111] hover:bg-black/[0.02] dark:hover:bg-white/[0.02] border border-gray-100 dark:border-white/5 flex items-center justify-between group cursor-pointer transition-colors duration-300"
+    >
       <div className="flex items-center gap-5">
         <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold italic transition-all ${isInterview ? 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-500 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white' : 'bg-purple-500/10 border border-purple-500/20 text-purple-500 dark:text-purple-400 group-hover:bg-purple-600 group-hover:text-white'}`}>
           {data.score}%
@@ -412,7 +416,7 @@ function HistoryItem({ data, onClick, onDelete, type }: any) {
 
 function QuickActionCard({ icon, title, description, onClick, highlight = false }: any) {
   return (
-    <motion.div whileHover={{ y: -4, backgroundColor: "rgba(0,0,0,0.02)" }} whileTap={{ scale: 0.98 }} onClick={onClick} className={`cursor-pointer p-6 rounded-4xl border transition-all flex items-center gap-5 ${highlight ? 'bg-indigo-600/5 border-indigo-500/10 dark:border-indigo-500/20 shadow-sm' : 'bg-gray-50 dark:bg-[#111] border-gray-100 dark:border-white/5'}`}><div className="p-4 rounded-2xl bg-white dark:bg-white/5 shadow-sm dark:shadow-none">{icon}</div><div><h5 className="font-bold text-sm text-black dark:text-white">{title}</h5><p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium uppercase">{description}</p></div><ChevronRight size={16} className="ml-auto text-gray-300 dark:text-gray-700" /></motion.div>
+    <motion.div whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }} onClick={onClick} className={`cursor-pointer p-6 rounded-4xl border transition-all hover:bg-black/[0.01] dark:hover:bg-white/[0.01] flex items-center gap-5 ${highlight ? 'bg-indigo-600/5 border-indigo-500/10 dark:border-indigo-500/20 shadow-sm' : 'bg-gray-50 dark:bg-[#111] border-gray-100 dark:border-white/5'}`}><div className="p-4 rounded-2xl bg-white dark:bg-white/5 shadow-sm dark:shadow-none">{icon}</div><div><h5 className="font-bold text-sm text-black dark:text-white">{title}</h5><p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium uppercase">{description}</p></div><ChevronRight size={16} className="ml-auto text-gray-300 dark:text-gray-700" /></motion.div>
   );
 }
 
