@@ -378,7 +378,7 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
       </main>
 
       <AnimatePresence>{deleteModal.isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6"><motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setDeleteModal({ isOpen: false, id: null })} className="absolute inset-0 bg-black/40 dark:bg-black/80 backdrop-blur-md" /><motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="relative bg-white dark:bg-[#111] border border-gray-200 dark:border-white/10 p-10 rounded-[2.5rem] max-w-sm w-full text-center shadow-2xl"><AlertCircle size={40} className="mx-auto text-red-500 mb-6" /><h3 className="text-xl font-bold mb-2 text-black dark:text-white">Delete {deleteModal.type === 'interview' ? 'Session' : 'Resume'}?</h3><div className="flex gap-4 mt-6"><button onClick={() => setDeleteModal({ isOpen: false, id: null })} className="flex-1 py-3 rounded-xl bg-gray-100 dark:bg-white/5 text-[10px] font-black uppercase text-black dark:text-white">Cancel</button><button onClick={confirmDelete} className="flex-1 py-3 rounded-xl bg-red-600 text-white text-[10px] font-black uppercase">Delete</button></div></motion.div></div>
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-6"><motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setDeleteModal({ isOpen: false, id: null })} className="absolute inset-0 bg-black/40 dark:bg-black/80 backdrop-blur-md" /><motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="relative bg-white dark:bg-[#111] border border-gray-200 dark:border-white/10 p-10 rounded-[2.5rem] max-w-sm w-full text-center shadow-2xl"><AlertCircle size={40} className="mx-auto text-red-500 mb-6" /><h3 className="text-xl font-bold mb-2 text-black dark:text-white">Delete {deleteModal.type === 'interview' ? 'Session' : 'Resume'}?</h3><div className="flex gap-4 mt-6"><button onClick={() => setDeleteModal({ isOpen: false, id: null })} className="flex-1 py-3 rounded-xl bg-gray-100 dark:bg-white/5 text-[10px] font-black uppercase text-black dark:text-white">Cancel</button><button onClick={confirmDelete} className="flex-1 py-3 rounded-xl bg-red-600 text-white text-[10px] font-black uppercase">Delete</button></div></motion.div></div>
       )}</AnimatePresence>
     </div>
   );
@@ -391,7 +391,7 @@ function HistoryItem({ data, onClick, onDelete, type }: any) {
     <motion.div 
       onClick={onClick} 
       whileHover={{ x: 4 }} 
-      className="p-5 rounded-4xl bg-gray-50 dark:bg-[#111] hover:bg-black/[0.02] dark:hover:bg-white/[0.02] border border-gray-100 dark:border-white/5 flex items-center justify-between group cursor-pointer transition-colors duration-300"
+      className="p-5 rounded-4xl bg-gray-50 dark:bg-[#111] hover:bg-black/2 dark:hover:bg-white/2 border border-gray-100 dark:border-white/5 flex items-center justify-between group cursor-pointer transition-colors duration-300"
     >
       <div className="flex items-center gap-5">
         <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold italic transition-all ${isInterview ? 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-500 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white' : 'bg-purple-500/10 border border-purple-500/20 text-purple-500 dark:text-purple-400 group-hover:bg-purple-600 group-hover:text-white'}`}>
@@ -416,13 +416,23 @@ function HistoryItem({ data, onClick, onDelete, type }: any) {
 
 function QuickActionCard({ icon, title, description, onClick, highlight = false }: any) {
   return (
-    <motion.div whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }} onClick={onClick} className={`cursor-pointer p-6 rounded-4xl border transition-all hover:bg-black/[0.01] dark:hover:bg-white/[0.01] flex items-center gap-5 ${highlight ? 'bg-indigo-600/5 border-indigo-500/10 dark:border-indigo-500/20 shadow-sm' : 'bg-gray-50 dark:bg-[#111] border-gray-100 dark:border-white/5'}`}><div className="p-4 rounded-2xl bg-white dark:bg-white/5 shadow-sm dark:shadow-none">{icon}</div><div><h5 className="font-bold text-sm text-black dark:text-white">{title}</h5><p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium uppercase">{description}</p></div><ChevronRight size={16} className="ml-auto text-gray-300 dark:text-gray-700" /></motion.div>
+    <motion.div whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }} onClick={onClick} className={`cursor-pointer p-6 rounded-4xl border transition-all hover:bg-black/1 dark:hover:bg-white/1 flex items-center gap-5 ${highlight ? 'bg-indigo-600/5 border-indigo-500/10 dark:border-indigo-500/20 shadow-sm' : 'bg-gray-50 dark:bg-[#111] border-gray-100 dark:border-white/5'}`}><div className="p-4 rounded-2xl bg-white dark:bg-white/5 shadow-sm dark:shadow-none">{icon}</div><div><h5 className="font-bold text-sm text-black dark:text-white">{title}</h5><p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium uppercase">{description}</p></div><ChevronRight size={16} className="ml-auto text-gray-300 dark:text-gray-700" /></motion.div>
   );
 }
 
 function SidebarLink({ icon, label, active = false, onClick }: { icon: any, label: string, active?: boolean, onClick?: () => void }) {
   return (
-    <div onClick={onClick} className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${active ? 'bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/10' : 'text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white hover:bg-gray-50 dark:hover:bg-white/5'}`}>{icon}<span className="text-[11px] font-bold tracking-tight">{label}</span></div>
+    <div 
+      onClick={onClick} 
+      className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors duration-200 border ${
+        active 
+          ? 'bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/10' 
+          : 'text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white hover:bg-gray-50 dark:hover:bg-white/5 border-transparent'
+      }`}
+    >
+      {icon}
+      <span className="text-[11px] font-bold tracking-tight">{label}</span>
+    </div>
   );
 }
 
