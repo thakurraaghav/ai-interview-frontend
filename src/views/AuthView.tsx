@@ -50,14 +50,14 @@ export default function AuthView({ onAuthSuccess, onBack }: Props) {
     <div className="min-h-screen bg-[#FAF9F6] dark:bg-[#0A0A0A] text-[#0A0A0A] dark:text-[#FAF9F6] flex items-center justify-center p-6 relative overflow-hidden font-sans tracking-tight transition-colors duration-500">
       
       {/* ARCHITECTURAL STRUCTURAL LINES */}
-      <div className="absolute top-0 left-1/4 w-px h-full bg-[#0A0A0A]/3 dark:bg-white/[0.02] pointer-events-none" />
-      <div className="absolute top-0 left-3/4 w-px h-full bg-[#0A0A0A]/3 dark:bg-white/[0.02] pointer-events-none" />
+      <div className="absolute top-0 left-1/4 w-px h-full bg-[#0A0A0A]/3 dark:bg-white/2 pointer-events-none" />
+      <div className="absolute top-0 left-3/4 w-px h-full bg-[#0A0A0A]/3 dark:bg-white/2 pointer-events-none" />
 
       <motion.div 
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className="w-full max-w-[450px] relative z-10"
+        className="w-full max-w-112.5 relative z-10"
       >
         {/* --- DYNAMIC APALING THEMED CARD CONTAINER --- */}
         <div className="bg-white dark:bg-[#111111]/60 border border-[#0A0A0A]/5 dark:border-white/5 rounded-[2.5rem] p-10 md:p-14 shadow-xl dark:shadow-none backdrop-blur-xl transition-colors duration-500">

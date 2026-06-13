@@ -2,11 +2,29 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RecruitAI</title>
+    <script>
+      (function () {
+        try {
+          // Read your local storage token or check system preferences
+          const savedTheme = localStorage.getItem('theme');
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          
+          if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+            document.documentElement.classList.add('dark');
+            // Set raw background matching your dark tokens to override browser flash defaults
+            document.documentElement.style.backgroundColor = '#0A0A0A';
+          } else {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.style.backgroundColor = '#FAF9F6';
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
-  <body>
+  <body class="bg-[#FAF9F6] dark:bg-[#0A0A0A]">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
