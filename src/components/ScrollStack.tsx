@@ -45,7 +45,6 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
   stackPosition = '20%',
   scaleEndPosition = '10%',
   baseScale = 0.85,
-  scaleDuration = 0.5,
   rotationAmount = 0,
   blurAmount = 0,
   useWindowScroll = false,

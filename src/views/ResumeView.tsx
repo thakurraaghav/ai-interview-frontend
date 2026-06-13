@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Upload, ChevronLeft, Loader2, FileText, CheckCircle } from 'lucide-react';
+import { Upload, ChevronLeft, Loader2} from 'lucide-react';
 
 interface ResumeLabProps {
   onBack: () => void;
