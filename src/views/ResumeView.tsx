@@ -21,7 +21,7 @@ export default function ResumeView({ onBack, selectedRole }: ResumeLabProps) {
     formData.append('role', selectedRole);
 
     try {
-      const response = await fetch('http://localhost:3000/api/resume/analyze', {
+      const response = await fetch('https://ai-interview-backend-vgj7.onrender.com/api/resume/analyze', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`

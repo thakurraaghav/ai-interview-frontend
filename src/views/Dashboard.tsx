@@ -56,7 +56,7 @@ function ResumeLab({ onBack, selectedRole, fetchProfile }: { onBack: () => void;
     formData.append('role', selectedRole);
 
     try {
-      const response = await fetch('http://localhost:3000/api/resume/analyze', {
+      const response = await fetch('https://ai-interview-backend-vgj7.onrender.com/api/resume/analyze', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -142,7 +142,7 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
 
   const fetchProfile = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/auth/profile', {
+      const response = await fetch('https://ai-interview-backend-vgj7.onrender.com/api/auth/profile', {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const data = await response.json();
@@ -160,8 +160,8 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
   const confirmDelete = async () => {
     if (!deleteModal.id) return;
     const endpoint = deleteModal.type === 'interview' 
-      ? `http://localhost:3000/api/interview/${deleteModal.id}`
-      : `http://localhost:3000/api/resume/${deleteModal.id}`;
+      ? `https://ai-interview-backend-vgj7.onrender.com/api/interview/${deleteModal.id}`
+      : `https://ai-interview-backend-vgj7.onrender.com/api/resume/${deleteModal.id}`;
 
     try {
       const res = await fetch(endpoint, {

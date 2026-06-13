@@ -202,7 +202,7 @@ export default function CallView({ onEnd, onBack }: Props) {
     setStatus("thinking");
 
     try {
-      const response = await fetch('http://localhost:3000/api/interview/chat', {
+      const response = await fetch('https://ai-interview-backend-vgj7.onrender.com/api/interview/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userMessage: text, history: updatedHistory }),
@@ -247,7 +247,7 @@ export default function CallView({ onEnd, onBack }: Props) {
     }
     setStatus("thinking");
     try {
-      const response = await fetch('http://localhost:3000/api/interview/report', {
+      const response = await fetch('https://ai-interview-backend-vgj7.onrender.com/api/interview/report', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

@@ -21,7 +21,7 @@ export default function CompanyPrep({ selectedRole }: CompanyPrepProps) {
     console.log(`📡 Sending request to backend for Company: ${companyName}, Role: ${selectedRole}`);
 
     try {
-      const response = await fetch('http://localhost:3000/api/company/prep', {
+      const response = await fetch('https://ai-interview-backend-vgj7.onrender.com/api/company/prep', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
