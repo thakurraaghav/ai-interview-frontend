@@ -254,10 +254,21 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
   }
 
   return (
-    <div className="flex h-screen bg-white dark:bg-[#050505] text-black dark:text-white overflow-hidden font-sans selection:bg-indigo-500/30 transition-colors duration-300">
-      <aside className="w-64 border-r border-gray-100 dark:border-white/5 flex flex-col p-6 lg:flex shrink-0">
-        <div className="mb-10 px-2 flex items-center gap-2 text-indigo-500 font-black tracking-tighter text-2xl italic">
-          <Zap size={24} fill="currentColor" /> RecruitAI
+    <div className="flex h-screen bg-[#FAF9F6] dark:bg-[#0c1324] text-black dark:text-[#dce1fb] overflow-hidden font-sans selection:bg-indigo-500/30 transition-colors duration-300 relative">
+      {/* 🌌 Dashboard Background Grid (visible in dark mode) */}
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-0 dark:opacity-20 transition-opacity duration-500">
+        <svg className="w-full h-full" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern height="40" id="dash-grid" patternUnits="userSpaceOnUse" width="40">
+              <path className="text-[#464555]" d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="0.5"></path>
+            </pattern>
+          </defs>
+          <rect fill="url(#dash-grid)" height="100%" width="100%"></rect>
+        </svg>
+      </div>
+      <aside className="w-64 border-r border-gray-100 dark:border-white/5 bg-white dark:bg-[#151b2d] flex flex-col p-6 lg:flex shrink-0 relative z-10 transition-colors duration-500 shadow-xl">
+        <div className="mb-10 px-2 flex items-center gap-2 text-indigo-500 dark:text-[#c3c0ff] font-black tracking-tighter text-2xl italic">
+          <Zap size={24} fill="currentColor" className="text-indigo-500 dark:text-[#4edea3]" /> Hannah AI
         </div>
         <nav className="space-y-2 flex-1">
           <SidebarLink icon={<LayoutDashboard size={18}/>} label="Dashboard" active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} />
@@ -279,7 +290,7 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
           <header className="flex justify-between items-center mb-4">
             <div className="relative group w-full max-w-md hidden md:block">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-400 transition-colors" size={16} />
-              <input type="text" placeholder="Search sessions..." className="w-full bg-gray-50 dark:bg-[#111] border border-gray-200 dark:border-white/5 rounded-xl py-3 pl-12 pr-4 text-xs focus:outline-none focus:border-indigo-500/50 transition-all text-black dark:text-white" />
+              <input type="text" placeholder="Search sessions..." className="w-full bg-gray-50 dark:bg-[#151b2d]/50 border border-gray-200 dark:border-white/10 rounded-xl py-3 pl-12 pr-4 text-xs focus:outline-none focus:border-indigo-500/50 transition-all text-black dark:text-white backdrop-blur-md" />
             </div>
             <div className="flex items-center gap-4 ml-auto">
               <div className="p-2 bg-gray-50 dark:bg-[#111] rounded-lg border border-gray-200 dark:border-white/5 text-gray-400 cursor-pointer hover:text-black dark:hover:text-white transition-colors relative"><Bell size={18} /><span className="absolute top-2 right-2 w-1.5 h-1.5 bg-indigo-500 rounded-full border-2 border-white dark:border-black" /></div>
@@ -293,11 +304,12 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
           <AnimatePresence mode="wait">
             {activeTab === 'dashboard' ? (
               <motion.div key="dashboard" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
-                <section className="relative p-8 md:p-12 rounded-[2.5rem] bg-indigo-600/5 dark:bg-linear-to-br dark:from-indigo-900/20 dark:via-transparent dark:to-transparent border border-indigo-100 dark:border-white/10 overflow-hidden shadow-sm dark:shadow-2xl">
+                <section className="relative p-8 md:p-12 rounded-[2.5rem] bg-indigo-600/5 dark:bg-[#151b2d]/80 backdrop-blur-2xl border border-indigo-100 dark:border-white/10 overflow-hidden shadow-sm dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] transition-colors duration-500">
+                  <div className="absolute top-[-50%] right-[-10%] w-[100%] h-[200%] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-500/10 dark:from-[#c3c0ff]/10 to-transparent opacity-50 blur-[80px] pointer-events-none"></div>
                   <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
                     <div className="text-center md:text-left">
-                      <h2 className="text-3xl md:text-5xl font-bold text-black dark:text-white mb-3 tracking-tighter italic">Welcome back, {userData?.name?.split(' ')[0]}</h2>
-                      <p className="text-gray-500 dark:text-gray-400 max-w-md text-sm font-light leading-relaxed">Your readiness score is looking sharp for <span className="text-black dark:text-white font-medium">{selectedRole}</span> roles.</p>
+                      <h2 className="text-3xl md:text-5xl font-bold text-black dark:text-[#c3c0ff] mb-3 tracking-tighter italic">Welcome back, {userData?.name?.split(' ')[0]}</h2>
+                      <p className="text-gray-500 dark:text-[#c7c4d8] max-w-md text-sm font-light leading-relaxed">Your readiness score is looking sharp for <span className="text-black dark:text-white font-medium">{selectedRole}</span> roles.</p>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
                       <div className="bg-white/80 dark:bg-black/40 backdrop-blur-md p-2 rounded-2xl border border-gray-200 dark:border-white/5 flex items-center gap-4">
@@ -331,12 +343,12 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
                   <QuickActionCard icon={<Building2 className="text-purple-500 dark:text-purple-400" />} title="Company Prep" description="AI Candidate Evaluation" onClick={() => setActiveTab('company')} />
                 </section>
 
-                <div className="grid grid-cols-12 gap-6">
-                  <div className="col-span-12 lg:col-span-8 bg-gray-50 dark:bg-[#111] border border-gray-100 dark:border-white/5 rounded-[2.5rem] p-8">
-                    <div className="h-62.5 w-full min-h-0"><ResponsiveContainer width="100%" aspect={3}><LineChart data={trendData}><CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} /><XAxis dataKey="date" stroke="#999" fontSize={10} tickLine={false} axisLine={false} /><YAxis domain={[0, 100]} hide /><Tooltip contentStyle={{ backgroundColor: '#111', border: 'none', borderRadius: '12px', color: '#fff' }} /><Line type="monotone" dataKey="score" stroke="#6366f1" strokeWidth={3} dot={{ r: 4, fill: '#6366f1' }} /></LineChart></ResponsiveContainer></div>
+                <div className="grid grid-cols-12 gap-6 relative z-10">
+                  <div className="col-span-12 lg:col-span-8 bg-white dark:bg-[#151b2d]/80 backdrop-blur-xl border border-gray-100 dark:border-white/10 rounded-[2.5rem] p-8 shadow-sm dark:shadow-[0_15px_30px_-10px_rgba(0,0,0,0.5)] transition-colors duration-500">
+                    <div className="h-62.5 w-full min-h-0"><ResponsiveContainer width="100%" aspect={3}><LineChart data={trendData}><CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} /><XAxis dataKey="date" stroke="#999" fontSize={10} tickLine={false} axisLine={false} /><YAxis domain={[0, 100]} hide /><Tooltip contentStyle={{ backgroundColor: '#151b2d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#dce1fb' }} /><Line type="monotone" dataKey="score" stroke="#4f46e5" strokeWidth={3} dot={{ r: 4, fill: '#4f46e5' }} /></LineChart></ResponsiveContainer></div>
                   </div>
                   <div className="col-span-12 lg:col-span-4 space-y-6">
-                    <div className="bg-gray-50 dark:bg-[#111] border border-gray-100 dark:border-white/5 rounded-[2.5rem] p-8"><h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 dark:text-gray-500 mb-6"><Sparkles size={14} className="text-indigo-500 dark:text-indigo-400" /> Career Readiness</h4><div className="space-y-6"><ProgressStat label="Technical Depth" value={78} /><ProgressStat label="Communication" value={92} /><ProgressStat label="Logical Reasoning" value={64} /></div></div>
+                    <div className="bg-white dark:bg-[#151b2d]/80 backdrop-blur-xl border border-gray-100 dark:border-white/10 rounded-[2.5rem] p-8 shadow-sm dark:shadow-[0_15px_30px_-10px_rgba(0,0,0,0.5)] transition-colors duration-500"><h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 dark:text-[#c7c4d8] mb-6"><Sparkles size={14} className="text-indigo-500 dark:text-[#4edea3]" /> Career Readiness</h4><div className="space-y-6"><ProgressStat label="Technical Depth" value={78} /><ProgressStat label="Communication" value={92} /><ProgressStat label="Logical Reasoning" value={64} /></div></div>
                   </div>
                 </div>
 
@@ -414,7 +426,7 @@ function HistoryItem({ data, onClick, onDelete, type }: HistoryItemProps) {
     <motion.div 
       onClick={onClick} 
       whileHover={{ x: 4 }} 
-      className="p-5 rounded-4xl bg-gray-50 dark:bg-[#111] hover:bg-black/2 dark:hover:bg-white/2 border border-gray-100 dark:border-white/5 flex items-center justify-between group cursor-pointer transition-colors duration-300"
+      className="p-5 rounded-4xl bg-white dark:bg-[#151b2d]/80 backdrop-blur-xl hover:bg-gray-50 dark:hover:bg-[#151b2d] border border-gray-100 dark:border-white/10 flex items-center justify-between group cursor-pointer transition-colors duration-300 shadow-sm dark:shadow-[0_10px_30px_-15px_rgba(0,0,0,0.5)]"
     >
       <div className="flex items-center gap-5">
         <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold italic transition-all ${isInterview ? 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-500 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white' : 'bg-purple-500/10 border border-purple-500/20 text-purple-500 dark:text-purple-400 group-hover:bg-purple-600 group-hover:text-white'}`}>
@@ -447,7 +459,7 @@ interface QuickActionCardProps {
 
 function QuickActionCard({ icon, title, description, onClick, highlight = false }: QuickActionCardProps) {
   return (
-    <motion.div whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }} onClick={onClick} className={`cursor-pointer p-6 rounded-4xl border transition-all hover:bg-black/1 dark:hover:bg-white/1 flex items-center gap-5 ${highlight ? 'bg-indigo-600/5 border-indigo-500/10 dark:border-indigo-500/20 shadow-sm' : 'bg-gray-50 dark:bg-[#111] border-gray-100 dark:border-white/5'}`}><div className="p-4 rounded-2xl bg-white dark:bg-white/5 shadow-sm dark:shadow-none">{icon}</div><div><h5 className="font-bold text-sm text-black dark:text-white">{title}</h5><p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium uppercase">{description}</p></div><ChevronRight size={16} className="ml-auto text-gray-300 dark:text-gray-700" /></motion.div>
+    <motion.div whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }} onClick={onClick} className={`cursor-pointer p-6 rounded-4xl border transition-all duration-300 flex items-center gap-5 ${highlight ? 'bg-indigo-600/5 dark:bg-[#4f46e5]/10 border-indigo-500/10 dark:border-[#4f46e5]/20 shadow-sm dark:shadow-[0_10px_20px_-10px_rgba(79,70,229,0.3)]' : 'bg-white dark:bg-[#151b2d]/80 backdrop-blur-xl hover:bg-gray-50 dark:hover:bg-[#151b2d] border-gray-100 dark:border-white/10 shadow-sm dark:shadow-[0_15px_30px_-10px_rgba(0,0,0,0.5)]'}`}><div className={`p-4 rounded-2xl shadow-sm dark:shadow-none ${highlight ? 'bg-indigo-500/10 dark:bg-[#4f46e5]/20' : 'bg-gray-50 dark:bg-white/5'}`}>{icon}</div><div><h5 className="font-bold text-sm text-black dark:text-[#dce1fb]">{title}</h5><p className="text-[10px] text-gray-400 dark:text-[#918fa1] font-medium uppercase">{description}</p></div><ChevronRight size={16} className="ml-auto text-gray-300 dark:text-[#464555]" /></motion.div>
   );
 }
 
@@ -457,8 +469,8 @@ function SidebarLink({ icon, label, active = false, onClick }: { icon: React.Rea
       onClick={onClick} 
       className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors duration-200 border ${
         active 
-          ? 'bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/10' 
-          : 'text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white hover:bg-gray-50 dark:hover:bg-white/5 border-transparent'
+          ? 'bg-indigo-600/10 text-indigo-600 dark:bg-white/5 dark:text-[#c3c0ff] border-indigo-500/10 dark:border-white/5 shadow-sm' 
+          : 'text-gray-400 dark:text-[#918fa1] hover:text-black dark:hover:text-[#dce1fb] hover:bg-gray-50 dark:hover:bg-white/5 border-transparent'
       }`}
     >
       {icon}
