@@ -6,17 +6,17 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://ai-interview-backe
 export async function apiFetch(endpoint: string, options: RequestInit = {}) {
   const token = localStorage.getItem('token');
   
-  const headers: HeadersInit = {
-    ...options.headers,
+  const headers: Record<string, string> = {
+    ...(options.headers as Record<string, string> || {}),
   };
 
   // Only set application/json if we are not sending FormData
   if (!(options.body instanceof FormData) && !('Content-Type' in headers)) {
-    (headers as any)['Content-Type'] = 'application/json';
+    headers['Content-Type'] = 'application/json';
   }
 
   if (token) {
-    (headers as any)['Authorization'] = `Bearer ${token}`;
+    headers['Authorization'] = `Bearer ${token}`;
   }
 
   const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;

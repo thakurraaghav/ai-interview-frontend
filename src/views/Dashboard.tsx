@@ -15,6 +15,7 @@ import {
 import ReportView from './ReportView';
 import CompanyPrep from '../components/CompanyPrep';
 import { apiFetch } from '../lib/api';
+import type { UserProfile, InterviewSession, ResumeSession } from '../types';
 
 // --- THEME TOGGLE COMPONENT ---
 interface ThemeToggleProps {
@@ -128,15 +129,24 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardProps) {
-  const [userData, setUserData] = useState<any>(null);
+  const [userData, setUserData] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedReport, setSelectedReport] = useState<any>(null);
+  const [slowLoading, setSlowLoading] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<InterviewSession | null>(null);
   const [selectedRole, setSelectedRole] = useState("Fullstack Developer");
   const [activeTab, setActiveTab] = useState<'dashboard' | 'resume' | 'history' | 'company'>('dashboard');
   const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; id: string | null; type?: 'interview' | 'resume' }>({ isOpen: false, id: null });
-  const [selectedResume, setSelectedResume] = useState<any>(null);
+  const [selectedResume, setSelectedResume] = useState<ResumeSession | null>(null);
 
   useEffect(() => { fetchProfile(); }, []);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (loading) {
+      timer = setTimeout(() => setSlowLoading(true), 3000);
+    }
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   const fetchProfile = async () => {
     try {
@@ -148,9 +158,9 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
 
   const handleLogout = () => { localStorage.removeItem('token'); window.location.reload(); };
 
-  const handleDeleteClick = (e: React.MouseEvent, id: string, type: 'interview' | 'resume') => {
+  const handleDeleteClick = (e: React.MouseEvent, id: string | undefined, type: 'interview' | 'resume') => {
     e.stopPropagation();
-    setDeleteModal({ isOpen: true, id, type });
+    if (id) setDeleteModal({ isOpen: true, id, type });
   };
 
   const confirmDelete = async () => {
@@ -163,11 +173,11 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
       const res = await apiFetch(endpoint, {
         method: 'DELETE'
       });
-      if (res.ok) {
+      if (res.ok && userData) {
         if (deleteModal.type === 'interview') {
-          setUserData({ ...userData, interviews: userData.interviews.filter((s: any) => (s.id || s._id) !== deleteModal.id) });
+          setUserData({ ...userData, interviews: userData.interviews.filter((s) => (s.id || s._id) !== deleteModal.id) });
         } else {
-          setUserData({ ...userData, resumes: userData.resumes.filter((s: any) => (s.id || s._id) !== deleteModal.id) });
+          setUserData({ ...userData, resumes: userData.resumes.filter((s) => (s.id || s._id) !== deleteModal.id) });
         }
       }
     } catch (err) { console.error(err); }
@@ -175,8 +185,19 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-white dark:bg-[#050505] flex items-center justify-center">
-      <div className="w-10 h-10 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+    <div className="min-h-screen flex flex-col gap-4 items-center justify-center bg-white dark:bg-black text-black dark:text-white">
+      <Loader2 className="animate-spin w-8 h-8 text-indigo-500" />
+      <AnimatePresence>
+        {slowLoading && (
+          <motion.p 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-sm font-medium text-gray-500 max-w-xs text-center"
+          >
+            Waking up the server, this may take up to 50 seconds on the free tier...
+          </motion.p>
+        )}
+      </AnimatePresence>
     </div>
   );
 
@@ -380,7 +401,14 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
 }
 
 // --- HELPER COMPONENTS (💡 TRANSITION HOVER FIX COMPLETED HERE) ---
-function HistoryItem({ data, onClick, onDelete, type }: any) {
+interface HistoryItemProps {
+  data: InterviewSession | ResumeSession;
+  onClick: () => void;
+  onDelete: (e: React.MouseEvent) => void;
+  type: 'interview' | 'resume';
+}
+
+function HistoryItem({ data, onClick, onDelete, type }: HistoryItemProps) {
   const isInterview = type === 'interview';
   return (
     <motion.div 
@@ -393,7 +421,7 @@ function HistoryItem({ data, onClick, onDelete, type }: any) {
           {data.score}%
         </div>
         <div>
-          <h5 className="font-bold text-sm tracking-tight text-black dark:text-white">{isInterview ? (data.verdict || "Session") : (data.fileName || "Resume")}</h5>
+          <h5 className="font-bold text-sm tracking-tight text-black dark:text-white">{isInterview ? ((data as InterviewSession).verdict || "Session") : ((data as ResumeSession).fileName || "Resume")}</h5>
           <div className="flex items-center gap-2 mt-1">
             <span className="text-[8px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-widest italic">{data.role}</span>
             <span className="text-[12px] text-gray-200 dark:text-gray-800">/</span>
@@ -409,13 +437,21 @@ function HistoryItem({ data, onClick, onDelete, type }: any) {
   );
 }
 
-function QuickActionCard({ icon, title, description, onClick, highlight = false }: any) {
+interface QuickActionCardProps {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  onClick: () => void;
+  highlight?: boolean;
+}
+
+function QuickActionCard({ icon, title, description, onClick, highlight = false }: QuickActionCardProps) {
   return (
     <motion.div whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }} onClick={onClick} className={`cursor-pointer p-6 rounded-4xl border transition-all hover:bg-black/1 dark:hover:bg-white/1 flex items-center gap-5 ${highlight ? 'bg-indigo-600/5 border-indigo-500/10 dark:border-indigo-500/20 shadow-sm' : 'bg-gray-50 dark:bg-[#111] border-gray-100 dark:border-white/5'}`}><div className="p-4 rounded-2xl bg-white dark:bg-white/5 shadow-sm dark:shadow-none">{icon}</div><div><h5 className="font-bold text-sm text-black dark:text-white">{title}</h5><p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium uppercase">{description}</p></div><ChevronRight size={16} className="ml-auto text-gray-300 dark:text-gray-700" /></motion.div>
   );
 }
 
-function SidebarLink({ icon, label, active = false, onClick }: { icon: any, label: string, active?: boolean, onClick?: () => void }) {
+function SidebarLink({ icon, label, active = false, onClick }: { icon: React.ReactNode, label: string, active?: boolean, onClick?: () => void }) {
   return (
     <div 
       onClick={onClick} 

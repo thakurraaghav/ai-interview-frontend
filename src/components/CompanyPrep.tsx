@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Building2, Search, Loader2, Target, Users, BookOpen, Sparkles } from 'lucide-react';
 import { apiFetch } from '../lib/api';
+import type { CompanyIntel } from '../types';
 
 interface CompanyPrepProps {
   selectedRole: string;
@@ -10,7 +11,7 @@ interface CompanyPrepProps {
 export default function CompanyPrep({ selectedRole }: CompanyPrepProps) {
   const [companyName, setCompanyName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [intel, setIntel] = useState<any>(null);
+  const [intel, setIntel] = useState<CompanyIntel | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -33,15 +34,15 @@ export default function CompanyPrep({ selectedRole }: CompanyPrepProps) {
         throw new Error(`Server returned status ${response.status}. Make sure backend routes are registered.`);
       }
 
-      const data = await response.json();
+      const data: CompanyIntel = await response.json();
       console.log("✅ Intel successfully received from backend:", data);
       setIntel(data);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.warn("⚠️ Backend route not found or server offline. Engaging local sandbox mode fallback rules.");
       console.error(error);
       
-      setErrorMessage("Showing sandbox simulation data.");
+      setErrorMessage("Failed to generate insights. The backend AI might be overwhelmed.");
 
       // Clean local structural fallback parsing mechanics
       setIntel({

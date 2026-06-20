@@ -1,10 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import LandingPage from './views/LandingPage';
-import CallView from './views/CallView';
-import ReportView from './views/ReportView';
-import Dashboard from './views/Dashboard';
-import AuthView from './views/AuthView';
+import { apiFetch } from './lib/api';
+import { Loader2 } from 'lucide-react';
+
+const CallView = lazy(() => import('./views/CallView'));
+const ReportView = lazy(() => import('./views/ReportView'));
+const Dashboard = lazy(() => import('./views/Dashboard'));
+const AuthView = lazy(() => import('./views/AuthView'));
 
 export type ViewState = "landing" | "auth" | "call" | "report" | "dashboard";
 
@@ -32,6 +35,9 @@ function App() {
   }, [isDark]);
 
   useEffect(() => {
+    // 💡 Wake up the Render backend in the background immediately
+    apiFetch('/').catch(() => {});
+
     const token = localStorage.getItem('token');
     if (token) {
       setUser({ name: "User" });
@@ -62,45 +68,47 @@ function App() {
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
         >
-          {view === "landing" && (
-            <LandingPage 
-              onStart={handleGetStarted} 
-              isDark={isDark} 
-              setIsDark={setIsDark} 
-            />
-          )}
+          <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-white dark:bg-black text-black dark:text-white"><Loader2 className="animate-spin w-8 h-8" /></div>}>
+            {view === "landing" && (
+              <LandingPage 
+                onStart={handleGetStarted} 
+                isDark={isDark} 
+                setIsDark={setIsDark} 
+              />
+            )}
 
-          {view === "auth" && (
-            <AuthView 
-              onAuthSuccess={(userData: any) => {
-                setUser(userData);
-                setView("dashboard");
-              }} 
-              onBack={() => setView("landing")} 
-            />
-          )}
+            {view === "auth" && (
+              <AuthView 
+                onAuthSuccess={(userData: any) => {
+                  setUser(userData);
+                  setView("dashboard");
+                }} 
+                onBack={() => setView("landing")} 
+              />
+            )}
 
-          {view === "call" && (
-            <CallView 
-              onEnd={handleFinishInterview} 
-              onBack={() => setView(user ? "dashboard" : "landing")} 
-            />
-          )}
+            {view === "call" && (
+              <CallView 
+                onEnd={handleFinishInterview} 
+                onBack={() => setView(user ? "dashboard" : "landing")} 
+              />
+            )}
 
-          {view === "report" && (
-            <ReportView 
-              data={reportData} 
-              onDashboard={() => setView("dashboard")} 
-            />
-          )}
+            {view === "report" && (
+              <ReportView 
+                data={reportData} 
+                onDashboard={() => setView("dashboard")} 
+              />
+            )}
 
-          {view === "dashboard" && (
-            <Dashboard 
-              onNewCall={() => setView("call")}
-              isDark={isDark} 
-              setIsDark={setIsDark} 
-            />
-          )}
+            {view === "dashboard" && (
+              <Dashboard 
+                onNewCall={() => setView("call")}
+                isDark={isDark} 
+                setIsDark={setIsDark} 
+              />
+            )}
+          </Suspense>
         </motion.div>
       </AnimatePresence>
     </div>

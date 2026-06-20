@@ -3,8 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, User, ArrowRight, Globe, ChevronLeft, ShieldCheck } from 'lucide-react';
 import { apiFetch } from '../lib/api';
 
+import type { User as UserType } from '../types';
+
 interface Props { 
-  onAuthSuccess: (user: any) => void; 
+  onAuthSuccess: (user: UserType) => void; 
   onBack: () => void; 
 }
 
@@ -92,11 +94,11 @@ export default function AuthView({ onAuthSuccess, onBack }: Props) {
                   transition={{ duration: 0.2 }}
                 >
                   <AuthInput 
-                    icon={<User size={15} />} 
+                    icon={<User size={18} />} 
                     type="text" 
-                    placeholder="Your Full Name" 
+                    placeholder="Full Name" 
                     value={name}
-                    onChange={(e: any) => setName(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
                     required
                   />
                 </motion.div>
@@ -104,20 +106,20 @@ export default function AuthView({ onAuthSuccess, onBack }: Props) {
             </AnimatePresence>
 
             <AuthInput 
-              icon={<Mail size={15} />} 
+              icon={<Mail size={18} />} 
               type="email" 
-              placeholder="Email Address" 
+              placeholder="Email address" 
               value={email}
-              onChange={(e: any) => setEmail(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
               required
             />
             
             <AuthInput 
-              icon={<Lock size={15} />} 
+              icon={<Lock size={18} />} 
               type="password" 
               placeholder="Password" 
               value={password}
-              onChange={(e: any) => setPassword(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
               required
             />
             
@@ -169,7 +171,11 @@ export default function AuthView({ onAuthSuccess, onBack }: Props) {
 }
 
 // --- DYNAMIC CONTROLLED HOVER INPUT FIELD ---
-function AuthInput({ icon, ...props }: any) {
+interface AuthInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  icon: React.ReactNode;
+}
+
+function AuthInput({ icon, ...props }: AuthInputProps) {
   return (
     <div className="relative group">
       <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-600 transition-colors duration-300 pointer-events-none">

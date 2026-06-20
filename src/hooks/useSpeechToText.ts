@@ -1,9 +1,32 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
+// Minimal interfaces for Web Speech API to avoid 'any' types
+interface SpeechRecognitionEvent {
+  resultIndex: number;
+  results: {
+    length: number;
+    [index: number]: {
+      [index: number]: {
+        transcript: string;
+      }
+    }
+  };
+}
+
+interface SpeechRecognition {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+}
+
 export const useSpeechToText = (onFinal: (text: string) => void) => {
   const [transcript, setTranscript] = useState("");
   const [isListening, setIsListening] = useState(false);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Use a Ref for the callback to prevent the useEffect from re-running 
@@ -14,15 +37,15 @@ export const useSpeechToText = (onFinal: (text: string) => void) => {
   }, [onFinal]);
 
   useEffect(() => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition || recognitionRef.current) return;
+    const SpeechRecognitionClass = (window as unknown as { SpeechRecognition: any }).SpeechRecognition || (window as unknown as { webkitSpeechRecognition: any }).webkitSpeechRecognition;
+    if (!SpeechRecognitionClass || recognitionRef.current) return;
 
-    const recognition = new SpeechRecognition();
+    const recognition: SpeechRecognition = new SpeechRecognitionClass();
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = 'en-US';
 
-    recognition.onresult = (event: any) => {
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
       let currentTranscript = "";

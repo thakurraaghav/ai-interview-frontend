@@ -3,11 +3,21 @@ import { useSpeechToText } from '../hooks/useSpeechToText';
 import { Loader2, Phone, PhoneOff, Mic, ChevronLeft, AlertCircle, Volume2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { apiFetch } from '../lib/api';
+import type { InterviewSession } from '../types';
 
-interface Props { onEnd: (data: any) => void; onBack: () => void; }
+interface Props { onEnd: (data: InterviewSession) => void; onBack: () => void; }
 
 // --- REUSABLE CUSTOM MODAL ---
-function Modal({ isOpen, title, message, confirmLabel, onConfirm, onCancel }: any) {
+interface ModalProps {
+  isOpen: boolean;
+  title: string;
+  message: string;
+  confirmLabel: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+function Modal({ isOpen, title, message, confirmLabel, onConfirm, onCancel }: ModalProps) {
   return (
     <AnimatePresence>
       {isOpen && (
