@@ -230,12 +230,13 @@ export default function CallView({ onEnd, onBack }: Props) {
         return;
       }
 
-      const aiText = decodeURIComponent(response.headers.get('X-AI-Text') || "");
+      const data = await response.json();
+      const aiText = data.text;
       setHistory(prev => [...prev, { role: "assistant", content: aiText }]);
 
-      const audioBlob = await response.blob();
+      const audioSrc = `data:audio/wav;base64,${data.audioBase64}`;
       if (audioRef.current) {
-        audioRef.current.src = URL.createObjectURL(audioBlob);
+        audioRef.current.src = audioSrc;
         setStatus("speaking");
         try {
           await audioRef.current.play();
