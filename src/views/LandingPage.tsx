@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 
 import ScrollStack, { ScrollStackItem } from '../components/ScrollStack';
-import Prism from '../components/Prism'; 
+import GlowingGrid from '../components/GlowingGrid';
 
 interface Props { 
   onStart: () => void; 
@@ -104,21 +104,9 @@ export default function LandingPage({ onStart, isDark, setIsDark }: Props) {
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#0A0A0A] text-[#0A0A0A] dark:text-[#FAF9F6] min-h-screen overflow-x-hidden selection:bg-indigo-500/10 font-sans tracking-tight transition-colors duration-500 scroll-smooth relative">
       
-      {/* 🌌 UPDATED: HIGH VISIBILITY PRISM LAYER */}
-      <div className="fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden opacity-90 dark:opacity-75 transition-opacity duration-500">
-        <Prism
-          animationType="rotate"
-          timeScale={0.4}
-          height={3.8}
-          baseWidth={6.0}
-          scale={4.0}
-          hueShift={0}
-          colorFrequency={1.5}
-          noise={0.2}
-          glow={2.0}
-          bloom={1.5}
-          suspendWhenOffscreen={true}
-        />
+      {/* 🌌 UPDATED: GLOWING GRID BACKGROUND */}
+      <div className="fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
+        <GlowingGrid />
         {/* Balanced vignettes: Stronger on bottom/top to keep text highly legible while letting center burst out */}
         <div className="absolute inset-0 bg-linear-to-t from-[#FAF9F6] via-transparent to-[#FAF9F6] dark:from-[#0A0A0A] dark:via-transparent dark:to-[#0A0A0A] opacity-90" />
         <div className="absolute inset-0 bg-linear-to-r from-[#FAF9F6] via-transparent to-[#FAF9F6] dark:from-[#0A0A0A] dark:via-transparent dark:to-[#0A0A0A] opacity-40" />
