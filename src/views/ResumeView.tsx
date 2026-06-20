@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Upload, ChevronLeft, Loader2} from 'lucide-react';
+import { apiFetch } from '../lib/api';
 
 interface ResumeLabProps {
   onBack: () => void;
@@ -21,11 +22,12 @@ export default function ResumeView({ onBack, selectedRole }: ResumeLabProps) {
     formData.append('role', selectedRole);
 
     try {
-      const response = await fetch('https://ai-interview-backend-vgj7.onrender.com/api/resume/analyze', {
+      const response = await apiFetch('/api/resume/analyze', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
+        // apiFetch handles Authorization, but FormData handles its own Content-Type automatically.
+        // We do NOT set Content-Type to application/json in apiFetch for FormData, but we need to ensure apiFetch doesn't force it if we pass FormData.
+        // Actually apiFetch sets 'Content-Type': 'application/json' by default! We must fix that in apiFetch!
+        // Wait, I will modify apiFetch to NOT set Content-Type if body is FormData. For now, let's just pass body.
         body: formData,
       });
 

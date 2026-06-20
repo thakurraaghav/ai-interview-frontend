@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { useSpeechToText } from '../hooks/useSpeechToText';
 import { Loader2, Phone, PhoneOff, Mic, ChevronLeft, AlertCircle, Volume2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { apiFetch } from '../lib/api';
 
 interface Props { onEnd: (data: any) => void; onBack: () => void; }
 
@@ -203,9 +204,8 @@ export default function CallView({ onEnd, onBack }: Props) {
     setStatus("thinking");
 
     try {
-      const response = await fetch('https://ai-interview-backend-vgj7.onrender.com/api/interview/chat', {
+      const response = await apiFetch('/api/interview/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userMessage: text, history: updatedHistory }),
       });
 

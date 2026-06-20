@@ -14,6 +14,7 @@ import {
 
 import ReportView from './ReportView';
 import CompanyPrep from '../components/CompanyPrep';
+import { apiFetch } from '../lib/api';
 
 // --- THEME TOGGLE COMPONENT ---
 interface ThemeToggleProps {
@@ -56,11 +57,8 @@ function ResumeLab({ onBack, selectedRole, fetchProfile }: { onBack: () => void;
     formData.append('role', selectedRole);
 
     try {
-      const response = await fetch('https://ai-interview-backend-vgj7.onrender.com/api/resume/analyze', {
+      const response = await apiFetch('/api/resume/analyze', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
         body: formData,
       });
 
@@ -142,9 +140,7 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
 
   const fetchProfile = async () => {
     try {
-      const response = await fetch('https://ai-interview-backend-vgj7.onrender.com/api/auth/profile', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
+      const response = await apiFetch('/api/auth/profile');
       const data = await response.json();
       setUserData(data);
     } catch (err) { console.error(err); } finally { setLoading(false); }
@@ -160,13 +156,12 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
   const confirmDelete = async () => {
     if (!deleteModal.id) return;
     const endpoint = deleteModal.type === 'interview' 
-      ? `https://ai-interview-backend-vgj7.onrender.com/api/interview/${deleteModal.id}`
-      : `https://ai-interview-backend-vgj7.onrender.com/api/resume/${deleteModal.id}`;
+      ? `/api/interview/${deleteModal.id}`
+      : `/api/resume/${deleteModal.id}`;
 
     try {
-      const res = await fetch(endpoint, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      const res = await apiFetch(endpoint, {
+        method: 'DELETE'
       });
       if (res.ok) {
         if (deleteModal.type === 'interview') {

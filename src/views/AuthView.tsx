@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, User, ArrowRight, Globe, ChevronLeft, ShieldCheck } from 'lucide-react';
+import { apiFetch } from '../lib/api';
 
 interface Props { 
   onAuthSuccess: (user: any) => void; 
@@ -24,9 +25,8 @@ export default function AuthView({ onAuthSuccess, onBack }: Props) {
     const payload = isLogin ? { email, password } : { name, email, password };
 
     try {
-      const response = await fetch(`https://ai-interview-backend-vgj7.onrender.com${endpoint}`, {
+      const response = await apiFetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
