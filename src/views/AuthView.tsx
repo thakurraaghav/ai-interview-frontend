@@ -4,16 +4,16 @@ import { Mail, Lock, User, ArrowRight, ArrowLeft, ShieldCheck } from 'lucide-rea
 import { apiFetch } from '../lib/api';
 import type { User as UserType } from '../types';
 
-interface Props { 
-  onAuthSuccess: (user: UserType) => void; 
-  onBack: () => void; 
+interface Props {
+  onAuthSuccess: (user: UserType) => void;
+  onBack: () => void;
 }
 
 export default function AuthView({ onAuthSuccess, onBack }: Props) {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Form States
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -32,9 +32,9 @@ export default function AuthView({ onAuthSuccess, onBack }: Props) {
         method: 'POST',
         body: JSON.stringify(payload)
       });
-      
+
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.error || 'Authentication failed');
       }
@@ -83,14 +83,14 @@ export default function AuthView({ onAuthSuccess, onBack }: Props) {
 
       {/* Main Container - Split Layout on Desktop */}
       <div className="relative z-10 w-full max-w-[1200px] flex flex-col md:flex-row bg-[#0c1324]/80 backdrop-blur-3xl rounded-[24px] overflow-hidden shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] border border-white/10">
-        
+
         {/* Left Side: Branding / Visual (Hidden on mobile) */}
         <div className="hidden md:flex md:w-1/2 bg-[#151b2d] flex-col justify-between p-[64px] relative overflow-hidden border-r border-white/5">
           {/* Decorative gradient orb */}
           <div className="absolute top-[-20%] left-[-20%] w-[150%] h-[150%] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#c3c0ff]/10 to-transparent opacity-50 blur-[100px]"></div>
 
           <div className="relative z-10">
-            <div className="font-['Inter'] text-[48px] leading-[56px] tracking-[-0.02em] font-bold text-[#c3c0ff] mb-[24px]">Hannah AI</div>
+            <div className="font-['Inter'] text-[48px] leading-[56px] tracking-[-0.02em] font-bold text-[#c3c0ff] mb-[24px]">Recruit AI</div>
             <p className="font-['Inter'] text-[18px] leading-[28px] font-medium text-[#c7c4d8] max-w-[80%]">Secure Entry to your AI Workspace. Evaluate, practice, and refine your technical skills.</p>
           </div>
 
@@ -138,11 +138,11 @@ export default function AuthView({ onAuthSuccess, onBack }: Props) {
             )}
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-[24px]">
-              
+
               {/* Name Input (Register Only) */}
               <AnimatePresence>
                 {!isLogin && (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
@@ -254,7 +254,7 @@ export default function AuthView({ onAuthSuccess, onBack }: Props) {
             <div className="mt-[40px] text-center">
               <p className="font-['Inter'] text-[14px] leading-[20px] font-normal text-[#464555]">
                 {isLogin ? "Don't have an account? " : "Already have an account? "}
-                <button 
+                <button
                   onClick={() => setIsLogin(!isLogin)}
                   type="button"
                   className="text-[#c3c0ff] hover:text-[#e2dfff] transition-colors font-medium cursor-pointer"
