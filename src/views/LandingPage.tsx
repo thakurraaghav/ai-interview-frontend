@@ -106,7 +106,7 @@ export default function LandingPage({ onStart, isDark, setIsDark }: Props) {
       
       {/* 🌌 UPDATED: DOTTED BACKGROUND */}
       <div className="fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
-        <DotBackground />
+        <DotBackground isDark={isDark} />
         {/* Balanced vignettes: Stronger on bottom/top to keep text highly legible while letting center burst out */}
         <div className="absolute inset-0 bg-linear-to-t from-[#FAF9F6] via-transparent to-[#FAF9F6] dark:from-[#0A0A0A] dark:via-transparent dark:to-[#0A0A0A] opacity-90" />
         <div className="absolute inset-0 bg-linear-to-r from-[#FAF9F6] via-transparent to-[#FAF9F6] dark:from-[#0A0A0A] dark:via-transparent dark:to-[#0A0A0A] opacity-40" />
