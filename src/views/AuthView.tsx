@@ -117,7 +117,7 @@ export default function AuthView({ onAuthSuccess, onBack }: Props) {
         <div className="w-full md:w-1/2 p-[40px] md:p-[64px] flex flex-col justify-center relative bg-[#0c1324]/50 backdrop-blur-xl">
           {/* Mobile Brand Header */}
           <div className="md:hidden text-center mb-[64px]">
-            <div className="font-['Inter'] text-[24px] leading-[32px] font-bold text-[#c3c0ff]">Hannah AI</div>
+            <div className="font-['Inter'] text-[24px] leading-[32px] font-bold text-[#c3c0ff]">Recruit AI</div>
             <p className="font-['Inter'] text-[14px] leading-[20px] font-normal text-[#c7c4d8] mt-[4px]">Secure Entry to your AI Workspace</p>
           </div>
 
