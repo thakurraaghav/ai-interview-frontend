@@ -375,7 +375,7 @@ export default function CallView({ onEnd, onBack }: Props) {
                     transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
                     className="absolute inset-0 rounded-full border-2 border-emerald-500 pointer-events-none w-32 h-32 -left-2 -top-2"
                   />
-                  <div className="w-28 h-28 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white text-3xl font-black italic shadow-xl">
+                  <div className="w-28 h-28 rounded-full bg-emerald-500/10 border-4 border-emerald-500/20 flex items-center justify-center text-4xl font-bold italic text-emerald-500 dark:text-emerald-400">
                     H
                   </div>
                 </div>

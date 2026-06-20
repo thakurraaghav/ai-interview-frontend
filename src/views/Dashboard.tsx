@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-   History, ChevronRight, 
-   ChevronLeft, LogOut, Mic, Building2, 
-   Sparkles, FileCheck, AlertCircle, File, LayoutDashboard,
-   Zap, Search, Bell, Settings, Upload, Loader2, CheckCircle,
-   Trash2, FileText, Sun, Moon
+import {
+  History, ChevronRight,
+  ChevronLeft, LogOut, Mic, Building2,
+  Sparkles, FileCheck, AlertCircle, File, LayoutDashboard,
+  Zap, Search, Bell, Settings, Upload, Loader2, CheckCircle,
+  Trash2, FileText, Sun, Moon
 } from 'lucide-react';
-import { 
-  ResponsiveContainer,    
-  LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid 
+import {
+  ResponsiveContainer,
+  LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid
 } from 'recharts';
 
 import ReportView from './ReportView';
@@ -34,7 +34,7 @@ function ThemeToggle({ isDark, setIsDark }: ThemeToggleProps) {
   }, [isDark]);
 
   return (
-    <button 
+    <button
       onClick={() => setIsDark(!isDark)}
       className="p-2 bg-gray-100 dark:bg-[#111] rounded-lg border border-gray-200 dark:border-white/5 text-gray-500 hover:text-indigo-500 transition-all cursor-pointer flex items-center justify-center"
     >
@@ -103,14 +103,14 @@ function ResumeLab({ onBack, selectedRole, fetchProfile }: { onBack: () => void;
       ) : (
         <div className="grid grid-cols-12 gap-6">
           <div className="col-span-12 lg:col-span-4 p-12 rounded-[3.5rem] bg-indigo-600 shadow-2xl shadow-indigo-500/20">
-             <span className="text-[10px] font-black uppercase tracking-widest text-white/60">ATS Match Score</span>
-             <div className="text-8xl font-bold mt-4 tracking-tighter italic text-white">{result.score}%</div>
+            <span className="text-[10px] font-black uppercase tracking-widest text-white/60">ATS Match Score</span>
+            <div className="text-8xl font-bold mt-4 tracking-tighter italic text-white">{result.score}%</div>
           </div>
           <div className="col-span-12 lg:col-span-8 p-12 rounded-[3.5rem] bg-gray-100 dark:bg-[#0A0A0A] border border-gray-200 dark:border-white/10 flex flex-col justify-center relative overflow-hidden">
-             <CheckCircle className="absolute -right-6 -bottom-6 w-48 h-48 text-black/2 dark:text-white/2 -rotate-12" />
-             <p className="text-2xl md:text-3xl font-bold italic tracking-tight text-black dark:text-white leading-tight relative z-10">
-               "{result.feedback}"
-             </p>
+            <CheckCircle className="absolute -right-6 -bottom-6 w-48 h-48 text-black/2 dark:text-white/2 -rotate-12" />
+            <p className="text-2xl md:text-3xl font-bold italic tracking-tight text-black dark:text-white leading-tight relative z-10">
+              "{result.feedback}"
+            </p>
           </div>
           <button onClick={() => setResult(null)} className="col-span-12 text-center text-gray-400 hover:text-black dark:hover:text-white transition-colors text-[10px] font-black uppercase tracking-[0.4em]">
             Analyze another resume
@@ -122,8 +122,8 @@ function ResumeLab({ onBack, selectedRole, fetchProfile }: { onBack: () => void;
 }
 
 // --- MAIN DASHBOARD ---
-interface DashboardProps { 
-  onNewCall: (role: string) => void; 
+interface DashboardProps {
+  onNewCall: (role: string) => void;
   isDark: boolean;
   setIsDark: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -165,7 +165,7 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
 
   const confirmDelete = async () => {
     if (!deleteModal.id) return;
-    const endpoint = deleteModal.type === 'interview' 
+    const endpoint = deleteModal.type === 'interview'
       ? `/api/interview/${deleteModal.id}`
       : `/api/resume/${deleteModal.id}`;
 
@@ -189,7 +189,7 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
       <Loader2 className="animate-spin w-8 h-8 text-indigo-500" />
       <AnimatePresence>
         {slowLoading && (
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-sm font-medium text-gray-500 max-w-xs text-center"
@@ -203,7 +203,7 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
 
   const interviews = userData?.interviews || [];
   const resumes = userData?.resumes || [];
-  
+
   const trendData = [...interviews].reverse().map(s => ({
     date: new Date(s.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
     score: s.score
@@ -211,9 +211,9 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
 
   if (selectedReport) {
     return (
-      <ReportView 
-        data={selectedReport} 
-        onDashboard={() => setSelectedReport(null)} 
+      <ReportView
+        data={selectedReport}
+        onDashboard={() => setSelectedReport(null)}
       />
     );
   }
@@ -236,16 +236,16 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
 
           <div className="grid grid-cols-12 gap-6">
             <div className="col-span-12 lg:col-span-4 p-12 rounded-[3.5rem] bg-purple-600 shadow-2xl shadow-purple-500/20">
-               <span className="text-[10px] font-black uppercase tracking-widest text-white/60">ATS Compatibility</span>
-               <div className="text-8xl font-bold mt-4 tracking-tighter italic text-white">{selectedResume.score}%</div>
+              <span className="text-[10px] font-black uppercase tracking-widest text-white/60">ATS Compatibility</span>
+              <div className="text-8xl font-bold mt-4 tracking-tighter italic text-white">{selectedResume.score}%</div>
             </div>
-            
+
             <div className="col-span-12 lg:col-span-8 p-12 rounded-[3.5rem] bg-gray-50 dark:bg-[#0A0A0A] border border-gray-200 dark:border-white/10 flex flex-col justify-center relative overflow-hidden">
-               <CheckCircle className="absolute -right-6 -bottom-6 w-48 h-48 text-black/2 dark:text-white/2 -rotate-12" />
-               <span className="text-[10px] font-black uppercase tracking-widest text-purple-500 mb-4 block">AI Feedback</span>
-               <p className="text-2xl md:text-3xl font-bold italic tracking-tight text-black dark:text-white leading-tight relative z-10">
-                 "{selectedResume.feedback}"
-               </p>
+              <CheckCircle className="absolute -right-6 -bottom-6 w-48 h-48 text-black/2 dark:text-white/2 -rotate-12" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-purple-500 mb-4 block">AI Feedback</span>
+              <p className="text-2xl md:text-3xl font-bold italic tracking-tight text-black dark:text-white leading-tight relative z-10">
+                "{selectedResume.feedback}"
+              </p>
             </div>
           </div>
         </div>
@@ -268,17 +268,17 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
       </div>
       <aside className="w-64 border-r border-gray-100 dark:border-white/5 bg-white dark:bg-[#151b2d] flex flex-col p-6 lg:flex shrink-0 relative z-10 transition-colors duration-500 shadow-xl">
         <div className="mb-10 px-2 flex items-center gap-2 text-indigo-500 dark:text-[#c3c0ff] font-black tracking-tighter text-2xl italic">
-          <Zap size={24} fill="currentColor" className="text-indigo-500 dark:text-[#4edea3]" /> Hannah AI
+          <Zap size={24} fill="currentColor" className="text-indigo-500 dark:text-[#4edea3]" /> Recruit AI
         </div>
         <nav className="space-y-2 flex-1">
-          <SidebarLink icon={<LayoutDashboard size={18}/>} label="Dashboard" active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} />
-          <SidebarLink icon={<History size={18}/>} label="History" active={activeTab === 'history'} onClick={() => setActiveTab('history')}/>
-          <SidebarLink icon={<File size={18}/>} label="Resume assessment" active={activeTab === 'resume'} onClick={() => setActiveTab('resume')} />
-          <SidebarLink icon={<Building2 size={18}/>} label="Company Preparation" active={activeTab === 'company'} onClick={() => setActiveTab('company')}/>
-          <SidebarLink icon={<Settings size={18}/>} label="Settings" />
+          <SidebarLink icon={<LayoutDashboard size={18} />} label="Dashboard" active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} />
+          <SidebarLink icon={<History size={18} />} label="History" active={activeTab === 'history'} onClick={() => setActiveTab('history')} />
+          <SidebarLink icon={<File size={18} />} label="Resume assessment" active={activeTab === 'resume'} onClick={() => setActiveTab('resume')} />
+          <SidebarLink icon={<Building2 size={18} />} label="Company Preparation" active={activeTab === 'company'} onClick={() => setActiveTab('company')} />
+          <SidebarLink icon={<Settings size={18} />} label="Settings" />
         </nav>
         <div className="mt-auto pt-6 border-t border-gray-100 dark:border-white/5 space-y-4">
-          <ThemeToggle isDark={isDark} setIsDark={setIsDark}/>
+          <ThemeToggle isDark={isDark} setIsDark={setIsDark} />
           <button onClick={handleLogout} className="flex items-center gap-3 p-3 w-full text-gray-400 hover:text-red-500 transition-colors text-[10px] font-black uppercase tracking-[0.2em]">
             <LogOut size={16} /> Logout
           </button>
@@ -313,25 +313,25 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
                     </div>
                     <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
                       <div className="bg-white/80 dark:bg-black/40 backdrop-blur-md p-2 rounded-2xl border border-gray-200 dark:border-white/5 flex items-center gap-4">
-                         <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)} className="bg-transparent text-[10px] font-black uppercase outline-none text-black dark:text-white cursor-pointer px-4">
-                           <option value="Frontend Developer" className="bg-white dark:bg-[#111]">Frontend Developer</option>
-                           <option value="Backend Developer" className="bg-white dark:bg-[#111]">Backend Developer</option>
-                           <option value="Software Engineer" className="bg-white dark:bg-[#111]">Software Engineer</option>
-                           <option value="Fullstack Developer" className="bg-white dark:bg-[#111]">Fullstack Developer</option>
-                           <option value="Cloud Engineer" className="bg-white dark:bg-[#111]">Cloud Engineer</option>
-                           <option value="Site Reliability Engineer" className="bg-white dark:bg-[#111]">Site Reliability Engineer</option>
-                           <option value="Security Engineer" className="bg-white dark:bg-[#111]">Security Engineer</option>
-                           <option value="Mobile App Developer" className="bg-white dark:bg-[#111]">Mobile App Developer</option>
-                           <option value="DevOps Engineer" className="bg-white dark:bg-[#111]">DevOps Engineer</option>
-                           <option value="Game Developer" className="bg-white dark:bg-[#111]">Game Developer</option>
-                           <option value="AI/ML Engineer" className="bg-white dark:bg-[#111]">AI/ML Engineer</option>
-                           <option value="Data Scientists" className="bg-white dark:bg-[#111]">Data Scientists</option>
-                           <option value="Product Manager" className="bg-white dark:bg-[#111]">Product Manager</option>
-                           <option value="Project Designer" className="bg-white dark:bg-[#111]">Project Designer</option>
-                           <option value="Business Analyst" className="bg-white dark:bg-[#111]">Business Analyst</option>
-                           <option value="Technical Recruiter" className="bg-white dark:bg-[#111]">Technical Recruiter</option>
-                         </select>
-                         <button onClick={() => onNewCall(selectedRole)} className="px-8 py-4 bg-indigo-600 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-xl hover:bg-indigo-500 transition-all shadow-lg flex items-center gap-2">Start Session <ChevronRight size={15} /></button>
+                        <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)} className="bg-transparent text-[10px] font-black uppercase outline-none text-black dark:text-white cursor-pointer px-4">
+                          <option value="Frontend Developer" className="bg-white dark:bg-[#111]">Frontend Developer</option>
+                          <option value="Backend Developer" className="bg-white dark:bg-[#111]">Backend Developer</option>
+                          <option value="Software Engineer" className="bg-white dark:bg-[#111]">Software Engineer</option>
+                          <option value="Fullstack Developer" className="bg-white dark:bg-[#111]">Fullstack Developer</option>
+                          <option value="Cloud Engineer" className="bg-white dark:bg-[#111]">Cloud Engineer</option>
+                          <option value="Site Reliability Engineer" className="bg-white dark:bg-[#111]">Site Reliability Engineer</option>
+                          <option value="Security Engineer" className="bg-white dark:bg-[#111]">Security Engineer</option>
+                          <option value="Mobile App Developer" className="bg-white dark:bg-[#111]">Mobile App Developer</option>
+                          <option value="DevOps Engineer" className="bg-white dark:bg-[#111]">DevOps Engineer</option>
+                          <option value="Game Developer" className="bg-white dark:bg-[#111]">Game Developer</option>
+                          <option value="AI/ML Engineer" className="bg-white dark:bg-[#111]">AI/ML Engineer</option>
+                          <option value="Data Scientists" className="bg-white dark:bg-[#111]">Data Scientists</option>
+                          <option value="Product Manager" className="bg-white dark:bg-[#111]">Product Manager</option>
+                          <option value="Project Designer" className="bg-white dark:bg-[#111]">Project Designer</option>
+                          <option value="Business Analyst" className="bg-white dark:bg-[#111]">Business Analyst</option>
+                          <option value="Technical Recruiter" className="bg-white dark:bg-[#111]">Technical Recruiter</option>
+                        </select>
+                        <button onClick={() => onNewCall(selectedRole)} className="px-8 py-4 bg-indigo-600 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-xl hover:bg-indigo-500 transition-all shadow-lg flex items-center gap-2">Start Session <ChevronRight size={15} /></button>
                       </div>
                     </div>
                   </div>
@@ -356,10 +356,10 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
                   <h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 dark:text-gray-500 px-4"><History size={14} /> Session Log</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {[...interviews].reverse().slice(0, 4).map((session: any, index: number) => (
-                      <HistoryItem 
-                        key={session.id || session._id || index} 
-                        data={session} 
-                        type="interview" 
+                      <HistoryItem
+                        key={session.id || session._id || index}
+                        data={session}
+                        type="interview"
                         onClick={() => setSelectedReport(session)}
                         onDelete={(e: React.MouseEvent) => handleDeleteClick(e, session.id || session._id, 'interview')}
                       />
@@ -371,14 +371,14 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
                 </div>
               </motion.div>
             ) : activeTab === 'resume' ? (
-              <ResumeLab key="resume" onBack={() => setActiveTab('dashboard')} selectedRole={selectedRole} fetchProfile={fetchProfile}/>
+              <ResumeLab key="resume" onBack={() => setActiveTab('dashboard')} selectedRole={selectedRole} fetchProfile={fetchProfile} />
             ) : activeTab === 'company' ? (
               <CompanyPrep key="company" selectedRole={selectedRole} />
             ) : (
               <motion.div key="history" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-12 pb-20">
                 <div className="flex items-center justify-between">
                   <h2 className="text-3xl font-bold italic tracking-tighter text-black dark:text-white">Your Archives</h2>
-                <button onClick={() => setActiveTab('dashboard')} className="text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white">Close History</button>
+                  <button onClick={() => setActiveTab('dashboard')} className="text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white">Close History</button>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -423,9 +423,9 @@ interface HistoryItemProps {
 function HistoryItem({ data, onClick, onDelete, type }: HistoryItemProps) {
   const isInterview = type === 'interview';
   return (
-    <motion.div 
-      onClick={onClick} 
-      whileHover={{ x: 4 }} 
+    <motion.div
+      onClick={onClick}
+      whileHover={{ x: 4 }}
       className="p-5 rounded-4xl bg-white dark:bg-[#151b2d]/80 backdrop-blur-xl hover:bg-gray-50 dark:hover:bg-[#151b2d] border border-gray-100 dark:border-white/10 flex items-center justify-between group cursor-pointer transition-colors duration-300 shadow-sm dark:shadow-[0_10px_30px_-15px_rgba(0,0,0,0.5)]"
     >
       <div className="flex items-center gap-5">
@@ -465,13 +465,12 @@ function QuickActionCard({ icon, title, description, onClick, highlight = false 
 
 function SidebarLink({ icon, label, active = false, onClick }: { icon: React.ReactNode, label: string, active?: boolean, onClick?: () => void }) {
   return (
-    <div 
-      onClick={onClick} 
-      className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors duration-200 border ${
-        active 
-          ? 'bg-indigo-600/10 text-indigo-600 dark:bg-white/5 dark:text-[#c3c0ff] border-indigo-500/10 dark:border-white/5 shadow-sm' 
+    <div
+      onClick={onClick}
+      className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors duration-200 border ${active
+          ? 'bg-indigo-600/10 text-indigo-600 dark:bg-white/5 dark:text-[#c3c0ff] border-indigo-500/10 dark:border-white/5 shadow-sm'
           : 'text-gray-400 dark:text-[#918fa1] hover:text-black dark:hover:text-[#dce1fb] hover:bg-gray-50 dark:hover:bg-white/5 border-transparent'
-      }`}
+        }`}
     >
       {icon}
       <span className="text-[11px] font-bold tracking-tight">{label}</span>

@@ -90,7 +90,7 @@ export default function AuthView({ onAuthSuccess, onBack }: Props) {
           <div className="absolute top-[-20%] left-[-20%] w-[150%] h-[150%] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#c3c0ff]/10 to-transparent opacity-50 blur-[100px]"></div>
 
           <div className="relative z-10">
-            <div className="font-['Inter'] text-[48px] leading-[56px] tracking-[-0.02em] font-bold text-[#c3c0ff] mb-[24px]">Recruit AI</div>
+            <div className="font-['Inter'] text-[48px] leading-[56px] tracking-[-0.02em] font-bold text-[#c3c0ff] mb-[24px]">Hannah AI</div>
             <p className="font-['Inter'] text-[18px] leading-[28px] font-medium text-[#c7c4d8] max-w-[80%]">Secure Entry to your AI Workspace. Evaluate, practice, and refine your technical skills.</p>
           </div>
 
