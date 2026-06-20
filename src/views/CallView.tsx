@@ -188,108 +188,48 @@ function AudioWaveVisualizer({ isListening }: { isListening: boolean }) {
   );
 }
 
+import { useAudioSession } from '../hooks/useAudioSession';
+
 export default function CallView({ onEnd, onBack }: Props) {
   const [callState, setCallState] = useState<"incoming" | "active">("incoming");
-  const [status, setStatus] = useState<"idle" | "thinking" | "speaking">("idle");
-  const [history, setHistory] = useState<{ role: string; content: string }[]>([]);
   const [showShortModal, setShowShortModal] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const isMounted = useRef(true);
+
+  const { status, history, initAudio, cleanupAudio, processResponse, isHannahSpeaking } = useAudioSession();
 
   useEffect(() => {
     isMounted.current = true;
-    audioRef.current = new Audio(); // Initialize here
     return () => {
       isMounted.current = false;
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
     };
   }, []);
 
-  const handleFinalTranscript = useCallback(async (text: string) => {
-    const updatedHistory = [...history, { role: "user", content: text }];
-    setHistory(updatedHistory);
-    setStatus("thinking");
-
-    try {
-      const response = await apiFetch('/api/interview/chat', {
-        method: 'POST',
-        body: JSON.stringify({ userMessage: text, history: updatedHistory }),
-      });
-
-      if (!isMounted.current) return;
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("API Error:", response.status, errorText);
-        setHistory(prev => [...prev, { role: "assistant", content: "I'm having trouble connecting to the network right now. Please try again." }]);
-        setStatus("idle");
-        startListening();
-        return;
-      }
-
-      const data = await response.json();
-      const aiText = data.text;
-      setHistory(prev => [...prev, { role: "assistant", content: aiText }]);
-
-      const audioSrc = `data:audio/wav;base64,${data.audioBase64}`;
-      if (audioRef.current) {
-        audioRef.current.src = audioSrc;
-        setStatus("speaking");
-        try {
-          await audioRef.current.play();
-          audioRef.current.onended = () => {
-            if (isMounted.current) setStatus("idle");
-            startListening();
-          };
-        } catch (playErr) {
-          console.error("Audio playback failed:", playErr);
-          if (isMounted.current) setStatus("idle");
-          startListening();
-        }
-      } else {
-        if (isMounted.current) setStatus("idle");
-        startListening();
-      }
-    } catch (error) {
-      console.error("Fetch error:", error);
-      if (isMounted.current) setStatus("idle");
+  const handleFinalTranscript = useCallback((text: string) => {
+    processResponse(text, () => {
       startListening();
-    }
-  }, [history]);
+    });
+  }, [processResponse]);
 
   const { transcript, isListening, startListening, stopListening } = useSpeechToText(handleFinalTranscript);
 
   const startActualCall = () => {
     setCallState("active");
-    // Unlock audio context on Safari/iOS
-    if (audioRef.current) {
-      audioRef.current.src = "data:audio/mp3;base64,//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
-      audioRef.current.play().catch(() => {});
-    }
+    initAudio();
     startListening();
   };
 
   const triggerEndSession = async () => {
     stopListening();
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current = null;
-    }
+    cleanupAudio();
+    
     if (history.length < 3) {
       setShowShortModal(true);
       return;
     }
-    setStatus("thinking");
+    
     try {
-      const response = await fetch('https://ai-interview-backend-vgj7.onrender.com/api/interview/report', {
+      const response = await apiFetch('/api/interview/report', {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
         body: JSON.stringify({ history }),
       });
       if (!isMounted.current) return;
@@ -299,8 +239,6 @@ export default function CallView({ onEnd, onBack }: Props) {
       onBack();
     }
   };
-
-  const isHannahSpeaking = status === "speaking";
   const isUserSpeaking = isListening && transcript.trim().length > 0;
 
   return (

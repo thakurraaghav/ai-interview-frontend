@@ -39,7 +39,6 @@ export default function AuthView({ onAuthSuccess, onBack }: Props) {
         throw new Error(data.error || 'Authentication failed');
       }
 
-      localStorage.setItem('token', data.token);
       onAuthSuccess(data.user);
     } catch (err: any) {
       setError(err.message);

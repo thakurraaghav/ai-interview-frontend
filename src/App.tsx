@@ -1,116 +1,171 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import LandingPage from './views/LandingPage';
-import { apiFetch } from './lib/api';
 import { Loader2 } from 'lucide-react';
 
+import { useThemeStore } from './store/themeStore';
+import { useAuthStore } from './store/authStore';
+import { apiFetch } from './lib/api';
+
+import LandingPage from './views/LandingPage';
 const CallView = lazy(() => import('./views/CallView'));
 const ReportView = lazy(() => import('./views/ReportView'));
 const Dashboard = lazy(() => import('./views/Dashboard'));
 const AuthView = lazy(() => import('./views/AuthView'));
 
-export type ViewState = "landing" | "auth" | "call" | "report" | "dashboard";
-
 function App() {
-  const [view, setView] = useState<ViewState>("landing");
-  const [user, setUser] = useState<{ name: string } | null>(null);
-  const [reportData, setReportData] = useState<any>(null);
-  
-  // 💡 GLOBAL PERSISTENT THEME STATE
-  const [isDark, setIsDark] = useState(() => {
-    const savedTheme = localStorage.getItem('theme');
-    return savedTheme ? savedTheme === 'dark' : true; // Defaulting to dark mode
-  });
+  const { isDark, setTheme } = useThemeStore();
+  const { isAuthenticated, setUser } = useAuthStore();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // Sync state modifications with HTML system root class tokens
   useEffect(() => {
     const root = window.document.documentElement;
     if (isDark) {
       root.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
     } else {
       root.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
     }
   }, [isDark]);
 
   useEffect(() => {
     // 💡 Wake up the Render backend in the background immediately
     apiFetch('/').catch(() => {});
-
-    const token = localStorage.getItem('token');
-    if (token) {
-      setUser({ name: "User" });
-      setView("dashboard");
+    
+    // Check for cookie-based session by hitting a /me or /auth/status endpoint
+    // If we're using HTTP-only cookies, we can check a protected endpoint.
+    // For now, if isAuthenticated is false but we might have a cookie, let's try calling backend.
+    if (!isAuthenticated) {
+      apiFetch('/api/auth/status')
+        .then(res => {
+          if (res.ok) {
+            res.json().then(data => {
+              setUser(data);
+              // if on landing, optionally go to dashboard
+            });
+          }
+        })
+        .catch(() => {});
     }
   }, []);
 
-  const handleFinishInterview = (data: any) => {
-    setReportData(data);
-    setView("report");
-  };
-
-  const handleGetStarted = () => {
-    if (user) {
-      setView("call");
-    } else {
-      setView("auth");
-    }
+  const handleStartCall = (role?: string) => {
+    // Role could be passed in State
+    navigate('/call', { state: { role: role || 'Software Engineer' } });
   };
 
   return (
     <div className="bg-white dark:bg-black min-h-screen text-black dark:text-white font-sans selection:bg-indigo-500/30 transition-colors duration-500">
       <AnimatePresence mode="wait">
-        <motion.div
-          key={view}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-        >
-          <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-white dark:bg-black text-black dark:text-white"><Loader2 className="animate-spin w-8 h-8" /></div>}>
-            {view === "landing" && (
+        <Routes location={location} key={location.pathname}>
+          
+          <Route path="/" element={
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+            >
               <LandingPage 
-                onStart={handleGetStarted} 
+                onStart={() => navigate(isAuthenticated ? '/dashboard' : '/auth')} 
                 isDark={isDark} 
-                setIsDark={setIsDark} 
+                setIsDark={(val) => typeof val === 'function' ? setTheme(val(isDark)) : setTheme(val)} 
               />
-            )}
+            </motion.div>
+          } />
 
-            {view === "auth" && (
-              <AuthView 
-                onAuthSuccess={(userData: any) => {
-                  setUser(userData);
-                  setView("dashboard");
-                }} 
-                onBack={() => setView("landing")} 
-              />
-            )}
+          <Route path="/auth" element={
+            !isAuthenticated ? (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                <Suspense fallback={<LoaderFallback />}>
+                  <AuthView 
+                    onAuthSuccess={(userData: any) => {
+                      setUser(userData);
+                      navigate('/dashboard');
+                    }} 
+                    onBack={() => navigate('/')} 
+                  />
+                </Suspense>
+              </motion.div>
+            ) : <Navigate to="/dashboard" replace />
+          } />
 
-            {view === "call" && (
-              <CallView 
-                onEnd={handleFinishInterview} 
-                onBack={() => setView(user ? "dashboard" : "landing")} 
-              />
-            )}
+          <Route path="/dashboard" element={
+            isAuthenticated ? (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="min-h-screen h-full flex flex-col"
+              >
+                <Suspense fallback={<LoaderFallback />}>
+                  <Dashboard 
+                    onNewCall={handleStartCall}
+                    isDark={isDark} 
+                    setIsDark={(val) => typeof val === 'function' ? setTheme(val(isDark)) : setTheme(val)} 
+                  />
+                </Suspense>
+              </motion.div>
+            ) : <Navigate to="/auth" replace />
+          } />
 
-            {view === "report" && (
-              <ReportView 
-                data={reportData} 
-                onDashboard={() => setView("dashboard")} 
-              />
-            )}
+          <Route path="/call" element={
+            isAuthenticated ? (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                <Suspense fallback={<LoaderFallback />}>
+                  <CallView 
+                    onEnd={(data) => navigate('/report', { state: { reportData: data } })} 
+                    onBack={() => navigate('/dashboard')} 
+                  />
+                </Suspense>
+              </motion.div>
+            ) : <Navigate to="/auth" replace />
+          } />
 
-            {view === "dashboard" && (
-              <Dashboard 
-                onNewCall={() => setView("call")}
-                isDark={isDark} 
-                setIsDark={setIsDark} 
-              />
-            )}
-          </Suspense>
-        </motion.div>
+          <Route path="/report" element={
+            isAuthenticated ? (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                <Suspense fallback={<LoaderFallback />}>
+                  <ReportWrapper />
+                </Suspense>
+              </motion.div>
+            ) : <Navigate to="/auth" replace />
+          } />
+
+        </Routes>
       </AnimatePresence>
+    </div>
+  );
+}
+
+// Wrapper to pass route state to ReportView
+function ReportWrapper() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  return <ReportView data={location.state?.reportData} onDashboard={() => navigate('/dashboard')} />;
+}
+
+function LoaderFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black text-black dark:text-white">
+      <Loader2 className="animate-spin w-8 h-8" />
     </div>
   );
 }

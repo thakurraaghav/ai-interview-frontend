@@ -4,8 +4,8 @@ import {
   History, ChevronRight,
   ChevronLeft, LogOut, Mic, Building2,
   Sparkles, FileCheck, AlertCircle, File, LayoutDashboard,
-  Zap, Search, Bell, Settings, Upload, Loader2, CheckCircle,
-  Trash2, FileText, Sun, Moon
+  Zap, Search, Bell, Settings, Loader2, CheckCircle,
+  FileText
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -14,112 +14,11 @@ import {
 
 import ReportView from './ReportView';
 import CompanyPrep from '../components/CompanyPrep';
+import ThemeToggle from '../components/ThemeToggle';
+import ResumeLab from '../components/ResumeLab';
+import HistoryItem from '../components/HistoryItem';
 import { apiFetch } from '../lib/api';
 import type { UserProfile, InterviewSession, ResumeSession } from '../types';
-
-// --- THEME TOGGLE COMPONENT ---
-interface ThemeToggleProps {
-  isDark: boolean;
-  setIsDark: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-function ThemeToggle({ isDark, setIsDark }: ThemeToggleProps) {
-  useEffect(() => {
-    const root = window.document.documentElement;
-    if (isDark) {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-  }, [isDark]);
-
-  return (
-    <button
-      onClick={() => setIsDark(!isDark)}
-      className="p-2 bg-gray-100 dark:bg-[#111] rounded-lg border border-gray-200 dark:border-white/5 text-gray-500 hover:text-indigo-500 transition-all cursor-pointer flex items-center justify-center"
-    >
-      {isDark ? <Sun size={18} /> : <Moon size={18} />}
-    </button>
-  );
-}
-
-// --- SUB-COMPONENT: RESUME LAB ---
-function ResumeLab({ onBack, selectedRole, fetchProfile }: { onBack: () => void; selectedRole: string, fetchProfile: () => Promise<void> }) {
-  const [analyzing, setAnalyzing] = useState(false);
-  const [result, setResult] = useState<{ score: number; feedback: string } | null>(null);
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setAnalyzing(true);
-    const formData = new FormData();
-    formData.append('resume', file);
-    formData.append('role', selectedRole);
-
-    try {
-      const response = await apiFetch('/api/resume/analyze', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) throw new Error('Analysis failed');
-
-      const data = await response.json();
-      setResult(data);
-
-      await fetchProfile();
-
-    } catch (error) {
-      console.error(error);
-      alert("Failed to connect to backend. Ensure the server is running on port 3000.");
-    } finally {
-      setAnalyzing(false);
-    }
-  };
-
-  return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-10">
-      <button onClick={onBack} className="flex items-center gap-2 text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white transition-all uppercase text-[10px] font-black tracking-widest">
-        <ChevronLeft size={16} /> Back to Dashboard
-      </button>
-
-      {!result ? (
-        <div className="p-20 border-2 border-dashed border-gray-200 dark:border-white/10 rounded-[3.5rem] bg-gray-50 dark:bg-white/2 flex flex-col items-center justify-center text-center">
-          <div className="p-6 rounded-3xl bg-indigo-600/10 text-indigo-500 mb-6">
-            {analyzing ? <Loader2 className="animate-spin" size={40} /> : <Upload size={40} />}
-          </div>
-          <h2 className="text-3xl font-bold italic mb-2 tracking-tighter text-black dark:text-white">
-            {analyzing ? 'Hannah is Analyzing...' : 'Resume Intelligence'}
-          </h2>
-          <p className="text-gray-500 max-w-sm mb-8 text-sm font-light leading-relaxed">
-            Upload your PDF. Hannah will benchmark it against <span className="text-black dark:text-white font-medium">{selectedRole}</span> standards.
-          </p>
-          <input type="file" id="resume-input" hidden accept=".pdf" onChange={handleFileUpload} disabled={analyzing} />
-          <label htmlFor="resume-input" className={`px-10 py-4 bg-indigo-600 text-white rounded-full font-bold cursor-pointer hover:scale-105 transition-all text-[11px] uppercase tracking-[0.2em] ${analyzing ? 'opacity-50 cursor-not-allowed' : ''}`}>
-            {analyzing ? 'Processing...' : 'Select PDF'}
-          </label>
-        </div>
-      ) : (
-        <div className="grid grid-cols-12 gap-6">
-          <div className="col-span-12 lg:col-span-4 p-12 rounded-[3.5rem] bg-indigo-600 shadow-2xl shadow-indigo-500/20">
-            <span className="text-[10px] font-black uppercase tracking-widest text-white/60">ATS Match Score</span>
-            <div className="text-8xl font-bold mt-4 tracking-tighter italic text-white">{result.score}%</div>
-          </div>
-          <div className="col-span-12 lg:col-span-8 p-12 rounded-[3.5rem] bg-gray-100 dark:bg-[#0A0A0A] border border-gray-200 dark:border-white/10 flex flex-col justify-center relative overflow-hidden">
-            <CheckCircle className="absolute -right-6 -bottom-6 w-48 h-48 text-black/2 dark:text-white/2 -rotate-12" />
-            <p className="text-2xl md:text-3xl font-bold italic tracking-tight text-black dark:text-white leading-tight relative z-10">
-              "{result.feedback}"
-            </p>
-          </div>
-          <button onClick={() => setResult(null)} className="col-span-12 text-center text-gray-400 hover:text-black dark:hover:text-white transition-colors text-[10px] font-black uppercase tracking-[0.4em]">
-            Analyze another resume
-          </button>
-        </div>
-      )}
-    </motion.div>
-  );
-}
 
 // --- MAIN DASHBOARD ---
 interface DashboardProps {
@@ -413,41 +312,6 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
 }
 
 // --- HELPER COMPONENTS (💡 TRANSITION HOVER FIX COMPLETED HERE) ---
-interface HistoryItemProps {
-  data: InterviewSession | ResumeSession;
-  onClick: () => void;
-  onDelete: (e: React.MouseEvent) => void;
-  type: 'interview' | 'resume';
-}
-
-function HistoryItem({ data, onClick, onDelete, type }: HistoryItemProps) {
-  const isInterview = type === 'interview';
-  return (
-    <motion.div
-      onClick={onClick}
-      whileHover={{ x: 4 }}
-      className="p-5 rounded-4xl bg-white dark:bg-[#151b2d]/80 backdrop-blur-xl hover:bg-gray-50 dark:hover:bg-[#151b2d] border border-gray-100 dark:border-white/10 flex items-center justify-between group cursor-pointer transition-colors duration-300 shadow-sm dark:shadow-[0_10px_30px_-15px_rgba(0,0,0,0.5)]"
-    >
-      <div className="flex items-center gap-5">
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold italic transition-all ${isInterview ? 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-500 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white' : 'bg-purple-500/10 border border-purple-500/20 text-purple-500 dark:text-purple-400 group-hover:bg-purple-600 group-hover:text-white'}`}>
-          {data.score}%
-        </div>
-        <div>
-          <h5 className="font-bold text-sm tracking-tight text-black dark:text-white">{isInterview ? ((data as InterviewSession).verdict || "Session") : ((data as ResumeSession).fileName || "Resume")}</h5>
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-[8px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-widest italic">{data.role}</span>
-            <span className="text-[12px] text-gray-200 dark:text-gray-800">/</span>
-            <span className="text-[8px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-widest">{new Date(data.date).toLocaleDateString()}</span>
-          </div>
-        </div>
-      </div>
-      <div className="flex items-center gap-2">
-        <button onClick={onDelete} className="p-3 text-gray-300 dark:text-gray-700 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100"><Trash2 size={14} /></button>
-        <ChevronRight size={16} className="text-gray-300 dark:text-gray-800 group-hover:text-black dark:group-hover:text-white transition-colors" />
-      </div>
-    </motion.div>
-  );
-}
 
 interface QuickActionCardProps {
   icon: React.ReactNode;
