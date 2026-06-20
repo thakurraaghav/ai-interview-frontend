@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 
 import ScrollStack, { ScrollStackItem } from '../components/ScrollStack';
-import AuroraMesh from '../components/AuroraMesh';
+import GridMotion from '../components/GridMotion';
 
 interface Props { 
   onStart: () => void; 
@@ -104,9 +104,9 @@ export default function LandingPage({ onStart, isDark, setIsDark }: Props) {
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#0A0A0A] text-[#0A0A0A] dark:text-[#FAF9F6] min-h-screen overflow-x-hidden selection:bg-indigo-500/10 font-sans tracking-tight transition-colors duration-500 scroll-smooth relative">
       
-      {/* 🌌 UPDATED: AURORA MESH BACKGROUND */}
-      <div className="fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden opacity-90 transition-opacity duration-500">
-        <AuroraMesh />
+      {/* 🌌 UPDATED: GRID MOTION BACKGROUND */}
+      <div className="fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
+        <GridMotion />
         {/* Balanced vignettes: Stronger on bottom/top to keep text highly legible while letting center burst out */}
         <div className="absolute inset-0 bg-linear-to-t from-[#FAF9F6] via-transparent to-[#FAF9F6] dark:from-[#0A0A0A] dark:via-transparent dark:to-[#0A0A0A] opacity-90" />
         <div className="absolute inset-0 bg-linear-to-r from-[#FAF9F6] via-transparent to-[#FAF9F6] dark:from-[#0A0A0A] dark:via-transparent dark:to-[#0A0A0A] opacity-40" />
