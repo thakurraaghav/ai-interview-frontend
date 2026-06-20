@@ -108,14 +108,14 @@ export default function DotBackground({ isDark }: Props) {
   }, [isDark]);
 
   return (
-    <div className="absolute inset-0 overflow-hidden bg-[#FAF9F6] dark:bg-[#050505] transition-colors duration-500">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
       <canvas 
         ref={canvasRef} 
-        className="absolute inset-0 z-0 block"
+        className="absolute inset-0 z-0 block opacity-60 dark:opacity-100"
       />
       
       {/* Subtle background glow for extra depth */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-indigo-500/10 dark:bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
     </div>
   );
 }
