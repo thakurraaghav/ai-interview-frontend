@@ -187,6 +187,7 @@ export default function CallView({ onEnd, onBack }: Props) {
 
   useEffect(() => {
     isMounted.current = true;
+    audioRef.current = new Audio(); // Initialize here
     return () => {
       isMounted.current = false;
       if (audioRef.current) {
@@ -210,21 +211,41 @@ export default function CallView({ onEnd, onBack }: Props) {
 
       if (!isMounted.current) return;
 
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("API Error:", response.status, errorText);
+        setHistory(prev => [...prev, { role: "assistant", content: "I'm having trouble connecting to the network right now. Please try again." }]);
+        setStatus("idle");
+        startListening();
+        return;
+      }
+
       const aiText = decodeURIComponent(response.headers.get('X-AI-Text') || "");
       setHistory(prev => [...prev, { role: "assistant", content: aiText }]);
 
       const audioBlob = await response.blob();
-      const audio = new Audio(URL.createObjectURL(audioBlob));
-      audioRef.current = audio;
-      
-      setStatus("speaking");
-      audio.play();
-      audio.onended = () => {
+      if (audioRef.current) {
+        audioRef.current.src = URL.createObjectURL(audioBlob);
+        setStatus("speaking");
+        try {
+          await audioRef.current.play();
+          audioRef.current.onended = () => {
+            if (isMounted.current) setStatus("idle");
+            startListening();
+          };
+        } catch (playErr) {
+          console.error("Audio playback failed:", playErr);
+          if (isMounted.current) setStatus("idle");
+          startListening();
+        }
+      } else {
         if (isMounted.current) setStatus("idle");
         startListening();
-      };
+      }
     } catch (error) {
+      console.error("Fetch error:", error);
       if (isMounted.current) setStatus("idle");
+      startListening();
     }
   }, [history]);
 
@@ -232,6 +253,11 @@ export default function CallView({ onEnd, onBack }: Props) {
 
   const startActualCall = () => {
     setCallState("active");
+    // Unlock audio context on Safari/iOS
+    if (audioRef.current) {
+      audioRef.current.src = "data:audio/mp3;base64,//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
+      audioRef.current.play().catch(() => {});
+    }
     startListening();
   };
 
