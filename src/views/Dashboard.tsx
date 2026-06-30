@@ -171,7 +171,7 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
       
       <aside className="w-64 border-r border-white/40 dark:border-white/5 bg-white/60 dark:bg-[#151b2d]/80 backdrop-blur-2xl flex flex-col p-6 lg:flex shrink-0 relative z-10 transition-colors duration-500 shadow-[0_0_40px_rgba(0,0,0,0.03)] dark:shadow-xl">
         <div className="mb-10 px-2 flex items-center gap-2 text-indigo-500 dark:text-[#c3c0ff] font-black tracking-tighter text-2xl italic">
-          <Zap size={24} fill="currentColor" className="text-indigo-500 dark:text-[#4edea3]" /> Recruit AI
+          <Zap size={24} fill="currentColor" className="text-indigo-500 dark:text-[#c3c0ff]" /> Recruit AI
         </div>
         <nav className="space-y-2 flex-1">
           <SidebarLink icon={<LayoutDashboard size={18} />} label="Dashboard" active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} />
