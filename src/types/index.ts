@@ -1,13 +1,11 @@
 export interface User {
   id?: string;
-  _id?: string;
   name: string;
   email: string;
 }
 
 export interface InterviewSession {
   id?: string;
-  _id?: string;
   date: string | Date;
   score: number;
   role: string;
@@ -18,7 +16,6 @@ export interface InterviewSession {
 
 export interface ResumeSession {
   id?: string;
-  _id?: string;
   date: string | Date;
   score: number;
   role: string;

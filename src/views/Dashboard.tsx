@@ -87,9 +87,9 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
       });
       if (res.ok && userData) {
         if (deleteModal.type === 'interview') {
-          setUserData({ ...userData, interviews: userData.interviews.filter((s) => (s.id || s._id) !== deleteModal.id) });
+          setUserData({ ...userData, interviews: userData.interviews.filter((s) => s.id !== deleteModal.id) });
         } else {
-          setUserData({ ...userData, resumes: userData.resumes.filter((s) => (s.id || s._id) !== deleteModal.id) });
+          setUserData({ ...userData, resumes: userData.resumes.filter((s) => s.id !== deleteModal.id) });
         }
       }
     } catch (err) { console.error(err); }
@@ -260,11 +260,11 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {[...interviews].reverse().slice(0, 4).map((session: any, index: number) => (
                       <HistoryItem
-                        key={session.id || session._id || index}
+                        key={session.id || index}
                         data={session}
                         type="interview"
                         onClick={() => setSelectedReport(session)}
-                        onDelete={(e: React.MouseEvent) => handleDeleteClick(e, session.id || session._id, 'interview')}
+                        onDelete={(e: React.MouseEvent) => handleDeleteClick(e, session.id, 'interview')}
                       />
                     ))}
                   </div>
@@ -289,7 +289,7 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
                     <h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] text-indigo-500 px-4"><Mic size={14} /> Interview Sessions</h4>
                     <div className="space-y-4">
                       {interviews.length > 0 ? [...interviews].reverse().map((s) => (
-                        <HistoryItem key={s.id || s._id} data={s} type="interview" onClick={() => setSelectedReport(s)} onDelete={(e: React.MouseEvent) => handleDeleteClick(e, s.id || s._id, 'interview')} />
+                        <HistoryItem key={s.id} data={s} type="interview" onClick={() => setSelectedReport(s)} onDelete={(e: React.MouseEvent) => handleDeleteClick(e, s.id, 'interview')} />
                       )) : <p className="text-gray-400 dark:text-gray-600 italic text-sm px-4">No interviews yet.</p>}
                     </div>
                   </div>
@@ -297,7 +297,7 @@ export default function Dashboard({ onNewCall, isDark, setIsDark }: DashboardPro
                     <h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] text-purple-500 px-4"><FileText size={14} /> Resume Assessments</h4>
                     <div className="space-y-4">
                       {resumes.length > 0 ? [...resumes].reverse().map((r) => (
-                        <HistoryItem key={r.id || r._id} data={r} type="resume" onClick={() => setSelectedResume(r)} onDelete={(e: React.MouseEvent) => handleDeleteClick(e, r.id || r._id, 'resume')} />
+                        <HistoryItem key={r.id} data={r} type="resume" onClick={() => setSelectedResume(r)} onDelete={(e: React.MouseEvent) => handleDeleteClick(e, r.id, 'resume')} />
                       )) : <p className="text-gray-400 dark:text-gray-600 italic text-sm px-4">No resumes yet.</p>}
                     </div>
                   </div>

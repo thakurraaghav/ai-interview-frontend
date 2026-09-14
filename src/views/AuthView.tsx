@@ -4,20 +4,20 @@ import { Mail, Lock, User, ArrowRight, ArrowLeft, ShieldCheck } from 'lucide-rea
 import { apiFetch } from '../lib/api';
 import type { User as UserType } from '../types';
 
-interface Props {
+interface AuthProps {
   onAuthSuccess: (user: UserType) => void;
   onBack: () => void;
 }
 
-export default function AuthView({ onAuthSuccess, onBack }: Props) {
+export default function AuthView({ onAuthSuccess, onBack }: AuthProps) {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Form States
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
