@@ -1,8 +1,5 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://ai-interview-backend-vgj7.onrender.com';
 
-/**
- * Enhanced fetch wrapper that automatically handles base URL and auth tokens.
- */
 export async function apiFetch(endpoint: string, options: RequestInit = {}) {
   const headers: Record<string, string> = {
     ...(options.headers as Record<string, string> || {}),
@@ -14,7 +11,7 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
   }
 
   const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
-  
+
   return fetch(url, {
     ...options,
     headers,

@@ -19,7 +19,6 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Sync state modifications with HTML system root class tokens
   useEffect(() => {
     const root = window.document.documentElement;
     if (isDark) {
@@ -30,23 +29,17 @@ function App() {
   }, [isDark]);
 
   useEffect(() => {
-    // 💡 Wake up the Render backend in the background immediately
-    apiFetch('/').catch(() => {});
-    
-    // Check for cookie-based session by hitting a /me or /auth/status endpoint
-    // If we're using HTTP-only cookies, we can check a protected endpoint.
-    // For now, if isAuthenticated is false but we might have a cookie, let's try calling backend.
+    apiFetch('/').catch(() => { });
     if (!isAuthenticated) {
       apiFetch('/api/auth/status')
         .then(res => {
           if (res.ok) {
             res.json().then(data => {
               setUser(data);
-              // if on landing, optionally go to dashboard
             });
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     }
   }, []);
 
@@ -59,7 +52,7 @@ function App() {
     <div className="bg-white dark:bg-black min-h-screen text-black dark:text-white font-sans selection:bg-indigo-500/30 transition-colors duration-500">
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-          
+
           <Route path="/" element={
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -67,10 +60,10 @@ function App() {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
-              <LandingPage 
-                onStart={() => navigate(isAuthenticated ? '/dashboard' : '/auth')} 
-                isDark={isDark} 
-                setIsDark={(val) => typeof val === 'function' ? setTheme(val(isDark)) : setTheme(val)} 
+              <LandingPage
+                onStart={() => navigate(isAuthenticated ? '/dashboard' : '/auth')}
+                isDark={isDark}
+                setIsDark={(val) => typeof val === 'function' ? setTheme(val(isDark)) : setTheme(val)}
               />
             </motion.div>
           } />
@@ -84,12 +77,12 @@ function App() {
                 transition={{ duration: 0.3, ease: "easeInOut" }}
               >
                 <Suspense fallback={<LoaderFallback />}>
-                  <AuthView 
+                  <AuthView
                     onAuthSuccess={(userData: any) => {
                       setUser(userData);
                       navigate('/dashboard');
-                    }} 
-                    onBack={() => navigate('/')} 
+                    }}
+                    onBack={() => navigate('/')}
                   />
                 </Suspense>
               </motion.div>
@@ -106,10 +99,10 @@ function App() {
                 className="min-h-screen h-full flex flex-col"
               >
                 <Suspense fallback={<LoaderFallback />}>
-                  <Dashboard 
+                  <Dashboard
                     onNewCall={handleStartCall}
-                    isDark={isDark} 
-                    setIsDark={(val) => typeof val === 'function' ? setTheme(val(isDark)) : setTheme(val)} 
+                    isDark={isDark}
+                    setIsDark={(val) => typeof val === 'function' ? setTheme(val(isDark)) : setTheme(val)}
                   />
                 </Suspense>
               </motion.div>
@@ -125,9 +118,9 @@ function App() {
                 transition={{ duration: 0.3, ease: "easeInOut" }}
               >
                 <Suspense fallback={<LoaderFallback />}>
-                  <CallView 
-                    onEnd={(data) => navigate('/report', { state: { reportData: data } })} 
-                    onBack={() => navigate('/dashboard')} 
+                  <CallView
+                    onEnd={(data) => navigate('/report', { state: { reportData: data } })}
+                    onBack={() => navigate('/dashboard')}
                   />
                 </Suspense>
               </motion.div>
