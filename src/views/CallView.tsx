@@ -4,10 +4,14 @@ import { Loader2, Phone, PhoneOff, Mic, ChevronLeft, AlertCircle, Volume2 } from
 import { motion, AnimatePresence } from 'framer-motion';
 import { apiFetch } from '../lib/api';
 import type { InterviewSession } from '../types';
+import { useAudioSession } from '../hooks/useAudioSession';
 
-interface Props { onEnd: (data: InterviewSession) => void; onBack: () => void; }
+interface Props {
+  onEnd: (data: InterviewSession) => void;
+  onBack: () => void;
+}
 
-// --- REUSABLE CUSTOM MODAL ---
+//REUSABLE CUSTOM MODAL
 interface ModalProps {
   isOpen: boolean;
   title: string;
@@ -22,12 +26,12 @@ function Modal({ isOpen, title, message, confirmLabel, onConfirm, onCancel }: Mo
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-100 flex items-center justify-center p-6">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={onCancel}
-            className="absolute inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-md" 
+            className="absolute inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-md"
           />
-          <motion.div 
+          <motion.div
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -39,15 +43,15 @@ function Modal({ isOpen, title, message, confirmLabel, onConfirm, onCancel }: Mo
               </div>
               <h3 className="text-2xl font-bold tracking-tight text-black dark:text-white mb-3">{title}</h3>
               <p className="text-gray-400 dark:text-gray-500 text-sm leading-relaxed mb-10">{message}</p>
-              
+
               <div className="flex flex-col w-full gap-3">
-                <button 
+                <button
                   onClick={onConfirm}
                   className="w-full py-4 rounded-2xl bg-[#0A0A0A] dark:bg-white text-[#FAF9F6] dark:text-black text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 cursor-pointer"
                 >
                   {confirmLabel}
                 </button>
-                <button 
+                <button
                   onClick={onCancel}
                   className="w-full py-4 rounded-2xl bg-neutral-100 dark:bg-white/5 text-[10px] font-black uppercase tracking-widest transition-all text-black dark:text-white active:scale-95 cursor-pointer"
                 >
@@ -62,7 +66,7 @@ function Modal({ isOpen, title, message, confirmLabel, onConfirm, onCancel }: Mo
   );
 }
 
-// --- 🎙️ INTERACTIVE CANVAS WAVEFORM VISUALIZER ---
+// INTERACTIVE CANVAS WAVEFORM VISUALIZER
 function AudioWaveVisualizer({ isListening }: { isListening: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -87,7 +91,7 @@ function AudioWaveVisualizer({ isListening }: { isListening: boolean }) {
 
         const source = audioCtx.createMediaStreamSource(stream);
         const analyser = audioCtx.createAnalyser();
-        analyser.fftSize = 64; 
+        analyser.fftSize = 64;
         source.connect(analyser);
         analyserRef.current = analyser;
 
@@ -133,17 +137,17 @@ function AudioWaveVisualizer({ isListening }: { isListening: boolean }) {
 
         for (let i = 0; i < totalBars; i++) {
           const value = dataArray[i] / 255;
-          const amplitude = Math.max(4, value * height * 0.85); 
+          const amplitude = Math.max(4, value * height * 0.85);
           const x = startX + i * (barWidth + barGap);
           const y = (height - amplitude) / 2;
 
           const gradient = ctx.createLinearGradient(x, y, x, y + amplitude);
-          gradient.addColorStop(0, '#34d399'); 
-          gradient.addColorStop(0.5, '#6366f1'); 
-          gradient.addColorStop(1, isDarkModeActive ? '#a855f7' : '#e0e7ff'); 
+          gradient.addColorStop(0, '#34d399');
+          gradient.addColorStop(0.5, '#6366f1');
+          gradient.addColorStop(1, isDarkModeActive ? '#a855f7' : '#e0e7ff');
 
           ctx.fillStyle = gradient;
-          
+
           ctx.beginPath();
           ctx.roundRect(x, y, barWidth, amplitude, 2);
           ctx.fill();
@@ -166,7 +170,7 @@ function AudioWaveVisualizer({ isListening }: { isListening: boolean }) {
     if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
       audioContextRef.current.close();
     }
-    
+
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
     if (canvas && ctx) {
@@ -188,7 +192,6 @@ function AudioWaveVisualizer({ isListening }: { isListening: boolean }) {
   );
 }
 
-import { useAudioSession } from '../hooks/useAudioSession';
 
 export default function CallView({ onEnd, onBack }: Props) {
   const [callState, setCallState] = useState<"incoming" | "active">("incoming");
@@ -221,12 +224,12 @@ export default function CallView({ onEnd, onBack }: Props) {
   const triggerEndSession = async () => {
     stopListening();
     cleanupAudio();
-    
+
     if (history.length < 3) {
       setShowShortModal(true);
       return;
     }
-    
+
     try {
       const response = await apiFetch('/api/interview/report', {
         method: 'POST',
@@ -243,11 +246,11 @@ export default function CallView({ onEnd, onBack }: Props) {
 
   return (
     <div className="min-h-screen bg-[#FAF9F6] dark:bg-[#050505] text-black dark:text-white flex flex-col font-sans overflow-hidden select-none relative transition-colors duration-500">
-      
+
       {/* 1. TOP NAV */}
       <nav className="w-full flex justify-between items-center p-6 md:p-10 relative z-50">
-        <button 
-          onClick={onBack} 
+        <button
+          onClick={onBack}
           className="group flex items-center gap-3 text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-all text-[10px] font-black uppercase tracking-[0.3em] cursor-pointer"
         >
           <div className="p-2 rounded-lg bg-neutral-100 dark:bg-white/5 border border-neutral-200/40 dark:border-transparent group-hover:bg-neutral-200 transition-colors">
@@ -261,7 +264,7 @@ export default function CallView({ onEnd, onBack }: Props) {
             <div className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
               <span className="text-[10px] font-black tracking-widest uppercase text-gray-400 dark:text-gray-300">Secure Live Stream</span>
-            </div> 
+            </div>
           </div>
         )}
       </nav>
@@ -270,7 +273,7 @@ export default function CallView({ onEnd, onBack }: Props) {
       <AnimatePresence mode="wait">
         {callState === "incoming" ? (
           /* --- PRE-CALL LOBBY VIEW --- */
-          <motion.main 
+          <motion.main
             key="lobby"
             initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }}
             className="flex-1 flex flex-col items-center justify-center relative z-10 p-6 text-center max-w-md mx-auto"
@@ -282,7 +285,7 @@ export default function CallView({ onEnd, onBack }: Props) {
             <p className="text-gray-400 dark:text-gray-500 text-sm font-light leading-relaxed mb-10">
               Hannah is prepared to initialize your technical evaluation workspace. Ensure your workspace is silent.
             </p>
-            <button 
+            <button
               onClick={startActualCall}
               className="px-12 py-5 bg-[#0A0A0A] dark:bg-white text-[#FAF9F6] dark:text-black hover:bg-indigo-600 dark:hover:bg-gray-200 hover:text-white active:scale-98 text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl flex items-center gap-3 shadow-md transition-all cursor-pointer"
             >
@@ -291,24 +294,23 @@ export default function CallView({ onEnd, onBack }: Props) {
           </motion.main>
         ) : (
           /* --- ACTIVE CONFERENCE PANEL VIEW --- */
-          <motion.main 
+          <motion.main
             key="grid"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 p-6 md:p-12 pt-0 pb-32 items-center max-w-7xl mx-auto w-full h-full relative z-10"
           >
             {/* PANEL A: AI INTERVIEWER */}
-            <motion.div 
+            <motion.div
               animate={{ scale: isHannahSpeaking ? 1.01 : 1 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className={`h-full min-h-[350px] w-full rounded-[2.5rem] bg-white dark:bg-[#0E0E0E] border transition-all duration-500 relative flex flex-col items-center justify-center overflow-hidden ${
-                isHannahSpeaking 
-                  ? 'border-emerald-500/40 shadow-xl ring-4 ring-emerald-500/5' 
-                  : 'border-neutral-200/50 dark:border-white/5'
-              }`}
+              className={`h-full min-h-[350px] w-full rounded-[2.5rem] bg-white dark:bg-[#0E0E0E] border transition-all duration-500 relative flex flex-col items-center justify-center overflow-hidden ${isHannahSpeaking
+                ? 'border-emerald-500/40 shadow-xl ring-4 ring-emerald-500/5'
+                : 'border-neutral-200/50 dark:border-white/5'
+                }`}
             >
               <div className="relative flex flex-col items-center justify-center z-10">
                 <div className="relative mb-6">
-                  <motion.div 
+                  <motion.div
                     animate={isHannahSpeaking ? { scale: [1, 1.15, 1], opacity: [0.2, 0, 0.2] } : {}}
                     transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
                     className="absolute inset-0 rounded-full border-2 border-emerald-500 pointer-events-none w-32 h-32 -left-2 -top-2"
@@ -317,7 +319,7 @@ export default function CallView({ onEnd, onBack }: Props) {
                     H
                   </div>
                 </div>
-                
+
                 <h3 className="text-xl font-bold tracking-tight italic mb-1 text-black dark:text-white">Hannah</h3>
                 <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-widest font-black">
                   {status === 'thinking' ? (
@@ -337,14 +339,13 @@ export default function CallView({ onEnd, onBack }: Props) {
             </motion.div>
 
             {/* PANEL B: CANDIDATE GRID */}
-            <motion.div 
+            <motion.div
               animate={{ scale: isUserSpeaking ? 1.01 : 1 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className={`h-full min-h-[350px] w-full rounded-[2.5rem] bg-white dark:bg-[#0E0E0E] border transition-all duration-500 relative flex flex-col items-center justify-center overflow-hidden ${
-                isUserSpeaking 
-                  ? 'border-indigo-500/40 shadow-xl ring-4 ring-indigo-500/5' 
-                  : 'border-neutral-200/50 dark:border-white/5'
-              }`}
+              className={`h-full min-h-[350px] w-full rounded-[2.5rem] bg-white dark:bg-[#0E0E0E] border transition-all duration-500 relative flex flex-col items-center justify-center overflow-hidden ${isUserSpeaking
+                ? 'border-indigo-500/40 shadow-xl ring-4 ring-indigo-500/5'
+                : 'border-neutral-200/50 dark:border-white/5'
+                }`}
             >
               <div className="text-center space-y-4 z-10 w-full relative">
                 <div className="w-24 h-24 rounded-full bg-neutral-100 dark:bg-white/5 border border-neutral-200/40 dark:border-white/10 flex items-center justify-center text-gray-400 text-2xl font-bold mx-auto transition-colors duration-500">
@@ -375,19 +376,18 @@ export default function CallView({ onEnd, onBack }: Props) {
       {callState === "active" && (
         <footer className="w-full p-10 flex justify-center items-center absolute bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-[#FAF9F6] via-[#FAF9F6]/80 dark:from-black dark:via-black/80 to-transparent transition-all duration-500">
           <div className="bg-white dark:bg-neutral-900/60 backdrop-blur-2xl border border-neutral-200 dark:border-white/5 px-6 py-3.5 rounded-3xl flex items-center gap-4 shadow-xl transition-colors duration-500">
-            
-            <div className={`p-4 rounded-xl border transition-all ${
-              isListening 
-                ? 'bg-emerald-500/5 border-emerald-500/10 text-emerald-600 dark:text-emerald-400' 
-                : 'bg-neutral-100 dark:bg-white/5 border-transparent text-gray-400'
-            }`}>
+
+            <div className={`p-4 rounded-xl border transition-all ${isListening
+              ? 'bg-emerald-500/5 border-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+              : 'bg-neutral-100 dark:bg-white/5 border-transparent text-gray-400'
+              }`}>
               <Mic size={18} />
             </div>
 
             <div className="w-px h-6 bg-neutral-200 dark:bg-white/10" />
 
-            <button 
-              onClick={triggerEndSession} 
+            <button
+              onClick={triggerEndSession}
               className="p-4 rounded-xl bg-red-600 border border-red-500/30 text-white hover:bg-red-500 hover:scale-105 active:scale-95 transition-all shadow-xl cursor-pointer"
             >
               <PhoneOff size={18} />
@@ -396,7 +396,7 @@ export default function CallView({ onEnd, onBack }: Props) {
         </footer>
       )}
 
-      <Modal 
+      <Modal
         isOpen={showShortModal}
         title="Insufficient Data"
         message="Hannah requires more dialogue to build a precise performance report. Ending now will discard the session analysis."

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-// Minimal interfaces for Web Speech API to avoid 'any' types
+//Minimal interfaces for Web Speech API to avoid 'any' types
 interface SpeechRecognitionEvent {
   resultIndex: number;
   results: {
@@ -28,7 +28,7 @@ export const useSpeechToText = (onFinal: (text: string) => void) => {
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  
+
   // Use a Ref for the callback to prevent the useEffect from re-running 
   // every time the parent component re-renders.
   const onFinalRef = useRef(onFinal);
@@ -52,21 +52,21 @@ export const useSpeechToText = (onFinal: (text: string) => void) => {
       for (let i = event.resultIndex; i < event.results.length; ++i) {
         currentTranscript += event.results[i][0].transcript;
       }
-      
+
       setTranscript(currentTranscript);
 
       timeoutRef.current = setTimeout(() => {
         if (currentTranscript.trim().length > 2) {
           // Use the Ref here so we don't need onFinal in the dependency array
           onFinalRef.current(currentTranscript);
-          setTranscript(""); 
+          setTranscript("");
         }
-      }, 1500); 
+      }, 1500);
     };
 
     recognition.onend = () => {
-      // 💡 Only restart if the USER didn't manually stop it
-      // This prevents the "mic turning off automatically" bug
+      //Only restart if the USER didn't manually stop it
+      //This prevents the "mic turning off automatically" bug
       if (recognitionRef.current && isListening) {
         try {
           recognition.start();
@@ -83,7 +83,7 @@ export const useSpeechToText = (onFinal: (text: string) => void) => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       recognition.stop();
     };
-  }, [isListening]); // 💡 Only depend on isListening
+  }, [isListening]); //Only depend on isListening
 
   const startListening = useCallback(() => {
     setIsListening(true);
